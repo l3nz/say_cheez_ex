@@ -1,33 +1,78 @@
 defmodule SayCheezEx do
   @moduledoc """
-  Documentation for `SayCheezEx`.
+  This module is used to retrieve assorted pieces of
+  configuration from a release's build environemnt.
 
-        build_at: "230212-1413",
-        build_at_day: "23-02-12",
-        build_at_full: "23-02-12 14:13:03",
-        build_by: "lenz",
-        build_on: "integration03",
-        build_version: "147",
-        git_all: "c000dea/2023-02-12.13:07:31",
-        git_commit_id: "c000dea",
-        git_commit_long: "c000dea548c7c43e5f9ccfa17ff4897d87142d95",
-        git_date: "2023-02-12.13:07:31",
-        git_date_compact: "20230212-1307",
-        git_last_committer: "Lenz",
-        project_name: :say_cheez_ex,
-        project_version: "0.1.0-dev",
-        system: "1.13.4/OTP25",
-        system_elixir: "1.13.4",
-        system_otp: "25"
+  - Which build is this?
+  - Who built this release?
+  - When was this built?
+  - What was the Git sha for this build?
 
+  To use it, just add it to your `mix.exs`.
+
+  Then capture all elements you need to a
+  module attribute - e.g.
+
+  ```
+    module Foo do
+      #  version: 0.1.1/7ea2260/230212.1425
+      @version SayCheezEx.info(:project_full_version)
+
+      ...
+    end
+  ```
+
+  Data gatehring will be done at compile time and will
+  simply create a string once and for all that matches
+  your informational need.
+
+  See `info/1` for  list of allowed attributes
 
   """
 
   @now NaiveDateTime.local_now()
   @git_log ["log", "--oneline", "-n", "1"]
+  @unknown_entry "?"
 
   @doc """
-  Gets information
+  Gets assorted pieces of system information.
+
+  ## Project
+
+  -  project_name: "say_cheez_ex",
+  -  project_version: "0.1.0-dev",
+  - project_full_version:  "0.1.0-dev/7ea2260/230212.1425",
+
+  ### Elixir - Erlang
+
+  - system: "1.13.4/OTP25",
+  - system_elixir: "1.13.4",
+  - system_otp: "25"
+
+  ## Git
+
+   - git_all: "7ea2260/230212.1425" - a
+     recap of commit id and date compact
+   - git_commit_id: "7ea2260" - the short commit-id
+   - git_commit_id_full: "7ea2260895f35fc46976a2fdbc4d8faeaad09467" -  the full commit-id
+   - git_date: "2023-02-12.14:25:47" - the date if last commit
+   - git_date_compact: "230212.1425" - she compact date of last commit
+   - git_last_committer: "Lenz" - the author of last commit
+
+  ## Build information
+
+   - build_at: "230213.1545" - a short date of when the release was built
+   - build_at_day: "2023-02-13" - the day a release was built
+   - build_at_full: "2023-02-13.15:45:08" - the exact time a release was built
+   - build_by: "jenkins"  - the user that was running on the build server
+   - build_on: "intserver03" - the server the release was built on
+
+  ### Jenkins-specific
+
+   - build_number: "86" - the value of the `BUILD_NUMBER`
+
+
+
 
 
   """
@@ -40,24 +85,32 @@ defmodule SayCheezEx do
     do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y-%m-%d.%H:%M:%S"])
 
   def info(:git_date_compact),
-    do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y%m%d-%H%M"])
+    do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%y%m%d.%H%M"])
 
-  def info(:git_all), do: "#{info(:git_commit_id)}/#{info(:git_date)}"
+  def info(:git_all), do: "#{info(:git_commit_id)}/#{info(:git_date_compact)}"
 
   def info(:project_name), do: Mix.Project.config()[:app]
   def info(:project_version), do: Mix.Project.config()[:version]
-  def info(:build_at), do: Calendar.strftime(@now, "%y%m%d-%H%M")
-  def info(:build_at_full), do: Calendar.strftime(@now, "%y-%m-%d %H:%M:%S")
-  def info(:build_at_day), do: Calendar.strftime(@now, "%y-%m-%d")
+  def info(:project_full_version), do: "#{info(:project_version)}/#{info(:git_all)}"
+  def info(:build_at), do: Calendar.strftime(@now, "%y%m%d.%H%M")
+  def info(:build_at_full), do: Calendar.strftime(@now, "%Y-%m-%d.%H:%M:%S")
+  def info(:build_at_day), do: Calendar.strftime(@now, "%Y-%m-%d")
 
   def info(:build_on), do: get_env("HOST")
   def info(:build_by), do: get_env("USER")
-  def info(:build_version), do: get_env("VERSION")
+  def info(:build_number), do: get_env("BUILD_NUMBER")
 
   def info(:system_elixir), do: System.build_info()[:version]
   def info(:system_otp), do: System.build_info()[:otp_release]
   def info(:system), do: "#{info(:system_elixir)}/OTP#{info(:system_otp)}"
 
+  @doc """
+  Dumps a map of all known build/env configuration
+  keys for this environment.
+
+  If you want a map of only some elements, see
+  `all/1`.
+  """
   def all(),
     do:
       all([
@@ -69,18 +122,27 @@ defmodule SayCheezEx do
         :git_all,
         :project_name,
         :project_version,
+        :project_full_version,
         :build_at,
         :build_at_full,
         :build_at_day,
         :build_on,
         :build_by,
-        :build_version,
+        :build_number,
         :system_elixir,
         :system_otp,
         :system
       ])
 
-  def all(lElems) do
+  @doc """
+  Prints a map of only some elements.
+
+  If you want a map of all elements, see
+  `all/0`.
+
+
+  """
+  def all(lElems) when is_list(lElems) do
     lElems
     |> Enum.map(fn k -> {k, info(k)} end)
     |> Map.new()
@@ -96,7 +158,7 @@ defmodule SayCheezEx do
         String.trim(tag)
 
       _ ->
-        "UNKNOWN"
+        @unknown_entry
     end
   end
 
@@ -108,7 +170,7 @@ defmodule SayCheezEx do
 
   def get_env(lVars) when is_list(lVars) do
     lVars
-    |> Enum.reduce_while("?", fn var, acc ->
+    |> Enum.reduce_while(@unknown_entry, fn var, acc ->
       case System.get_env(var) do
         nil -> {:cont, acc}
         "" -> {:cont, acc}
