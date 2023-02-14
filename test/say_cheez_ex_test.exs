@@ -47,6 +47,13 @@ defmodule SayCheezExTest do
     end
   end
 
+  describe "Other variables:" do
+    test "camelized project name" do
+      # in mix.exs, it is :say_cheez_ex
+      assert "SayCheezEx" = SayCheezEx.info(:project_name)
+    end
+  end
+
   describe "Environment variables:" do
     test "finds first env variable" do
       System.put_env("X1", "10")

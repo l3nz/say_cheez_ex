@@ -33,13 +33,14 @@ defmodule SayCheezEx do
   @git_log ["log", "--oneline", "-n", "1"]
   @unknown_entry "?"
 
-  @spec info(atom) :: binary | atom
+  @spec info(atom) :: binary
   @doc """
   Gets assorted pieces of system information.
 
   ## Project
 
-  -  project_name: "say_cheez_ex",
+  -  project_name: "SayCheezEx" - the project will be named with an atom
+     as `:say_cheez_ex`, but we return a camelized string
   -  project_version: "0.1.0-dev",
   - project_full_version:  "0.1.0-dev/7ea2260/230212.1425",
 
@@ -95,7 +96,12 @@ defmodule SayCheezEx do
 
   def info(:git_all), do: "#{info(:git_commit_id)}/#{info(:git_date_compact)}"
 
-  def info(:project_name), do: Mix.Project.config()[:app]
+  def info(:project_name),
+    do:
+      Mix.Project.config()[:app]
+      |> Atom.to_string()
+      |> Macro.camelize()
+
   def info(:project_version), do: Mix.Project.config()[:version]
   def info(:project_full_version), do: "#{info(:project_version)}/#{info(:git_all)}"
   def info(:build_at), do: Calendar.strftime(@now, "%y%m%d.%H%M")

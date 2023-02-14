@@ -67,6 +67,8 @@ map with all available attributes:
 
 ````
 %{
+  project_name: "SayCheezEx",
+  project_version: "0.1.0-dev",
   build_at: "230213.1617",
   build_at_day: "2023-02-13",
   build_at_full: "2023-02-13.16:17:55",
@@ -80,8 +82,6 @@ map with all available attributes:
   git_date_compact: "230213.1621",
   git_last_committer: "Lenz",
   project_full_version: "0.1.0-dev/8c0449f/230213.1621",
-  project_name: :say_cheez_ex,
-  project_version: "0.1.0-dev",
   system: "1.13.4/OTP25",
   system_elixir: "1.13.4",
   system_otp: "25",
