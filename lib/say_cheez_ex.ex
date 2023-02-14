@@ -84,8 +84,14 @@ defmodule SayCheezEx do
   def info(:git_date),
     do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y-%m-%d.%H:%M:%S"])
 
-  def info(:git_date_compact),
-    do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%y%m%d.%H%M"])
+  def info(:git_date_compact) do
+    # some versions of Git do not have %y for format, so we use %Y and
+    # remove the trailing characters
+    case git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y%m%d.%H%M"]) do
+      @unknown_entry -> @unknown_entry
+      d when is_binary(d) -> String.replace_prefix(d, "20", "")
+    end
+  end
 
   def info(:git_all), do: "#{info(:git_commit_id)}/#{info(:git_date_compact)}"
 
