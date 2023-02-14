@@ -6,16 +6,16 @@ defmodule SayCheezExTest do
   Most of these things are rather hard to test.
   """
 
-  def dateMatches?(sDate, sRegexTempl) do
+  def date_matches?(date, regex_templ) do
     {:ok, rx} =
-      "^#{sRegexTempl}$"
+      "^#{regex_templ}$"
       |> String.replace("n", "\\d")
       |> String.replace(".", "\\.")
       |> Regex.compile()
 
-    case String.match?(sDate, rx) do
+    case String.match?(date, rx) do
       true -> :ok
-      _ -> {:nomatch, sDate, sRegexTempl, rx}
+      _ -> {:nomatch, date, regex_templ, rx}
     end
   end
 
@@ -23,11 +23,11 @@ defmodule SayCheezExTest do
     test "dates" do
       assert :ok =
                SayCheezEx.info(:git_date)
-               |> dateMatches?("nnnn-nn-nn.nn:nn:nn")
+               |> date_matches?("nnnn-nn-nn.nn:nn:nn")
 
       assert :ok =
                SayCheezEx.info(:git_date_compact)
-               |> dateMatches?("nnnnnn.nnnn")
+               |> date_matches?("nnnnnn.nnnn")
     end
   end
 
@@ -35,15 +35,15 @@ defmodule SayCheezExTest do
     test "dates" do
       assert :ok =
                SayCheezEx.info(:build_at)
-               |> dateMatches?("nnnnnn.nnnn")
+               |> date_matches?("nnnnnn.nnnn")
 
       assert :ok =
                SayCheezEx.info(:build_at_full)
-               |> dateMatches?("nnnn-nn-nn.nn:nn:nn")
+               |> date_matches?("nnnn-nn-nn.nn:nn:nn")
 
       assert :ok =
                SayCheezEx.info(:build_at_day)
-               |> dateMatches?("nnnn-nn-nn")
+               |> date_matches?("nnnn-nn-nn")
     end
   end
 
