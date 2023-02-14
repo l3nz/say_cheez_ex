@@ -16,11 +16,13 @@ This library is heavily ispired by my previous (and very useful) Clojure library
 
 ## Installing
 
-Include:
+Just add to your `mix.exs` file:
 
         {:say_cheez_ex, "~> 0.1"}
 
-HexDocs: https://hexdocs.pm/say_cheez_ex
+
+- Full documentation: https://hexdocs.pm/say_cheez_ex
+- Hex.pm: https://hex.pm/packages/say_cheez_ex
 
 ## Using
 
