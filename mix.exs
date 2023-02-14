@@ -12,7 +12,8 @@ defmodule SayCheezEx.MixProject do
       package: package(),
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: docs()
     ]
   end
 
@@ -36,9 +37,30 @@ defmodule SayCheezEx.MixProject do
   defp package do
     [
       maintainers: ["lenz"],
-      licenses: ["Apache-2"],
+      licenses: ["Apache-2.0"],
       links: %{"GitHub" => @source_url},
       files: ~w(.formatter.exs mix.exs README.md CHANGELOG.md lib)
+    ]
+  end
+
+  defp docs do
+    [
+      # The main page in the docs, è il nome lowercase di una pagina
+      main: "readme",
+      source_url: @source_url,
+      extras: ["README.md", "CHANGELOG.md"],
+      authors: ["LE"],
+      formatters: ["html"],
+      before_closing_body_tag: fn
+        :html ->
+          """
+          <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+          <script>mermaid.initialize({startOnLoad: true})</script>
+          """
+
+        _ ->
+          ""
+      end
     ]
   end
 end
