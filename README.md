@@ -14,7 +14,7 @@ This library is heavily ispired by my previous (and very useful) Clojure library
 
 Include:
 
-        {:say_cheez_ex, "~> 0.1.2"}
+        {:say_cheez_ex, "~> 0.1"}
 
 HexDocs: https://hexdocs.pm/say_cheez_ex
 
@@ -24,7 +24,7 @@ Whenever you want to reference a version/build information,
 create an Elixir attribute for the module and compute its value through SayCheezEx.
 
 I often compute a "short" version number,
-an User-Agent for performing HTTP request,
+an User-Agent for performing HTTP requests,
 and a long version that contains the full
 build information.
 
@@ -34,7 +34,7 @@ For example:
 module Foo do
         # v 0.1.1 0123456 87
         @version_short "v #{SayCheezEx.info(:project_version)} #{SayCheezEx.info(:git_commit_id)}
-        #{SayCheezEx.info(:build_at)}"
+        #{SayCheezEx.info(:build_number)}"
         
         # MyProject-0.1.1
         @user_agent "#{SayCheezEx.info(:project_name)}-#{SayCheezEx.info(:project_version)}"
@@ -43,7 +43,7 @@ module Foo do
 end
 ```
 
-Always make sure that you assign those values to an attibute - never call those functions directly.
+Always make sure that you assign those values to an attibute - **never call those functions directly**.
 
 You can safely create such attributes in all modules that need them, as they are just one (usually very small) binary.
 

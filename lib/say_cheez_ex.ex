@@ -20,7 +20,7 @@ defmodule SayCheezEx do
     end
   ```
 
-  Data gatehring must be  done at compile time and will
+  Data gathering **must** be  done at compile time and will
   simply create a string once and for all that matches
   your informational need.
 
