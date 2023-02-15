@@ -108,9 +108,9 @@ defmodule SayCheezEx do
   def info(:build_at_full), do: Calendar.strftime(@now, "%Y-%m-%d.%H:%M:%S")
   def info(:build_at_day), do: Calendar.strftime(@now, "%Y-%m-%d")
 
-  def info(:build_on), do: get_env("HOST")
-  def info(:build_by), do: get_env("USER")
-  def info(:build_number), do: get_env("BUILD_NUMBER")
+  def info(:build_on), do: get_env_log("HOST")
+  def info(:build_by), do: get_env_log("USER")
+  def info(:build_number), do: get_env_log("BUILD_NUMBER")
 
   def info(:system_elixir), do: System.build_info()[:version]
   def info(:system_otp), do: System.build_info()[:otp_release]
@@ -220,5 +220,35 @@ defmodule SayCheezEx do
         v when is_binary(v) -> {:halt, v}
       end
     end)
+  end
+
+
+  def get_env_log(var) do
+    case get_env(var) do
+      @unknown_entry -> with all_env = System.get_env() do
+        IO.puts( "=== Could not find environment variable #{inspect(var)}")
+        IO.puts( "Current environment:")
+        Enum.map(all_env, fn {k, v} -> IO.puts(" - #{k} = '#{v}'") end)
+        @unknown_entry
+      end
+      s -> s
+    end
+  end
+
+
+  @doc """
+  SayCheezEx.msg(["Hello ", :system, " how are you?" ])
+
+
+
+  """
+  def msg( tokens ) when is_list(tokens) do
+    tokens
+    |> Enum.map(fn
+      t when is_binary(t) -> t
+      k when is_atom(k) -> info(k)
+      e when is_list(e) -> get_env(e)
+    end)
+    |> Enum.join()
   end
 end
