@@ -222,33 +222,40 @@ defmodule SayCheezEx do
     end)
   end
 
-
   def get_env_log(var) do
     case get_env(var) do
-      @unknown_entry -> with all_env = System.get_env() do
-        IO.puts( "=== Could not find environment variable #{inspect(var)}")
-        IO.puts( "Current environment:")
-        Enum.map(all_env, fn {k, v} -> IO.puts(" - #{k} = '#{v}'") end)
-        @unknown_entry
-      end
-      s -> s
+      @unknown_entry ->
+        with all_env <- System.get_env() do
+          IO.puts("=== Could not find environment variable #{inspect(var)}")
+          IO.puts("Current environment:")
+
+          for {k, v} <- all_env do
+            IO.puts(" - #{k} = '#{v}'")
+          end
+
+          @unknown_entry
+        end
+
+      s ->
+        s
     end
   end
 
-
   @doc """
+  TO BE DONE.
+
+
   SayCheezEx.msg(["Hello ", :system, " how are you?" ])
 
 
 
   """
-  def msg( tokens ) when is_list(tokens) do
+  def msg(tokens) when is_list(tokens) do
     tokens
-    |> Enum.map(fn
+    |> Enum.map_join(fn
       t when is_binary(t) -> t
       k when is_atom(k) -> info(k)
       e when is_list(e) -> get_env(e)
     end)
-    |> Enum.join()
   end
 end
