@@ -1,9 +1,13 @@
 # Changelog
 
 
-## 0.1.4 - ?
+## 0.1.4 - 2023.02.15
 
 - Fixed typos in documentation
+- Added msg method
+- Will now print missing variables on stdout
+- Fixes #10 - Camelized project name
+- Fixes #8 - Git: unknown date format
 
 ## 0.1.3 - 2023.02.14
 
