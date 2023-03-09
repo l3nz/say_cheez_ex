@@ -1,4 +1,5 @@
 defmodule SayCheezExTest do
+  # mix test test/say_cheez_ex_test.exs
   use ExUnit.Case
   doctest SayCheezEx
 
@@ -20,6 +21,34 @@ defmodule SayCheezExTest do
   end
 
   describe "git integration:" do
+    test "parse dates" do
+      dt = "2023-02-15 08:50:19 +0100"
+
+      assert "2023-15" =
+               SayCheezEx.date_from_iso_date(
+                 dt,
+                 [:ce, :yy, "-", :dd]
+               )
+
+      assert "230215.0850" =
+               SayCheezEx.date_from_iso_date(
+                 dt,
+                 [:yy, :mm, :dd, ".", :h, :m]
+               )
+
+      assert "2023-02-15.08:50:19" =
+               SayCheezEx.date_from_iso_date(
+                 dt,
+                 [:ce, :yy, "-", :mm, "-", :dd, ".", :h, ":", :m, ":", :s]
+               )
+
+      assert "2302?.0850" =
+               SayCheezEx.date_from_iso_date(
+                 dt,
+                 [:yy, :mm, :zebra, ".", :h, :m]
+               )
+    end
+
     test "dates" do
       assert :ok =
                SayCheezEx.info(:git_date)

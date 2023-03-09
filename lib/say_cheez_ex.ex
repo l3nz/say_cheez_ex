@@ -83,16 +83,14 @@ defmodule SayCheezEx do
   def info(:git_last_committer), do: git_run(@git_log ++ ["--pretty=%aN"])
 
   def info(:git_date),
-    do: git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y-%m-%d.%H:%M:%S"])
+    do:
+      git_iso_date()
+      |> date_from_iso_date([:ce, :yy, "-", :mm, "-", :dd, ".", :h, ":", :m, ":", :s])
 
-  def info(:git_date_compact) do
-    # some versions of Git do not have %y for format, so we use %Y and
-    # remove the trailing characters
-    case git_run(@git_log ++ ["--pretty=%cd", "--date=format:%Y%m%d.%H%M"]) do
-      @unknown_entry -> @unknown_entry
-      d when is_binary(d) -> String.replace_prefix(d, "20", "")
-    end
-  end
+  def info(:git_date_compact),
+    do:
+      git_iso_date()
+      |> date_from_iso_date([:yy, :mm, :dd, ".", :h, :m])
 
   def info(:git_all), do: "#{info(:git_commit_id)}/#{info(:git_date_compact)}"
 
@@ -191,7 +189,9 @@ defmodule SayCheezEx do
 
   @spec git_run([binary]) :: binary
   @doc """
-  Runs GIT.
+  Runs current Git command.
+
+  CWD is the root of the repo.
   """
 
   def git_run(subcmd) when is_list(subcmd) do
@@ -203,6 +203,14 @@ defmodule SayCheezEx do
         @unknown_entry
     end
   end
+
+  @doc """
+  Reads an ISO date from Git.
+
+  See `date_from_iso_date/2`
+  """
+  def git_iso_date(),
+    do: git_run(@git_log ++ ["--pretty=%cd", "--date=iso"])
 
   @spec get_env(binary | maybe_improper_list) :: binary
   @doc """
@@ -256,6 +264,33 @@ defmodule SayCheezEx do
       t when is_binary(t) -> t
       k when is_atom(k) -> info(k)
       e when is_list(e) -> get_env(e)
+    end)
+  end
+
+  @doc """
+  Creates a date out of an ISO date.
+
+  We need to do this instead of giving git format options,
+  as date formatting is not supported well by ancient git
+  versions (e.g. Centos7 still has git 1.8).
+
+  So we basically break a date of the format `2023-02-15 08:50:19 +0100`
+  into a set of tonkens, and reassemble them based on a list of input
+  tokens or constant strings.
+
+  """
+
+  def date_from_iso_date(iso_date, fmt_list) when is_binary(iso_date) and is_list(fmt_list) do
+    dt =
+      case Regex.run(~r/^(\d\d)(\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/, iso_date) do
+        [_, ce, yy, mm, dd, h, m, s] -> %{ce: ce, yy: yy, mm: mm, dd: dd, h: h, m: m, s: s}
+        _ -> %{}
+      end
+
+    fmt_list
+    |> Enum.map_join(fn
+      t when is_atom(t) -> Map.get(dt, t, "?")
+      s when is_binary(s) -> s
     end)
   end
 end

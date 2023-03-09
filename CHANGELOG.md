@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.5 - 2023.03.09
+
+- Able to read the date from ancient versions of Git. (bug #7)
 
 ## 0.1.4 - 2023.02.15
 
