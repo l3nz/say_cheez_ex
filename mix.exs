@@ -8,7 +8,7 @@ defmodule SayCheezEx.MixProject do
     [
       app: :say_cheez_ex,
       version: @version,
-      description: "Captures environment at build time",
+      description: "Captures the environment 📸 at build time",
       package: package(),
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,

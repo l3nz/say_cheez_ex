@@ -97,4 +97,11 @@ defmodule SayCheezExTest do
       assert "?" = SayCheezEx.get_env("XXX")
     end
   end
+
+  test "first non empty" do
+    e = "?"
+    assert "x" = SayCheezEx.first_non_empty([e, e, "x", "y", e])
+
+    assert "k" = SayCheezEx.first_non_empty([], "k")
+  end
 end

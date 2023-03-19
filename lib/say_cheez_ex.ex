@@ -66,7 +66,8 @@ defmodule SayCheezEx do
    - build_at_day: "2023-02-13" - the day a release was built
    - build_at_full: "2023-02-13.15:45:08" - the exact time a release was built
    - build_by: "jenkins"  - the user that was running on the build server
-   - build_on: "intserver03" - the server the release was built on
+   - build_on: "intserver03" - the server the release was built on.
+     First checks `hostname` then the environment variable `HOST`
 
   ### Jenkins-specific
 
@@ -106,9 +107,13 @@ defmodule SayCheezEx do
   def info(:build_at_full), do: Calendar.strftime(@now, "%Y-%m-%d.%H:%M:%S")
   def info(:build_at_day), do: Calendar.strftime(@now, "%Y-%m-%d")
 
-  def info(:build_on), do: get_env_log("HOST")
-  def info(:build_by), do: get_env_log("USER")
-  def info(:build_number), do: get_env_log("BUILD_NUMBER")
+  def info(:build_on),
+    do: first_non_empty([hostname(), get_env("HOST")])
+
+  def info(:build_by), do: get_env("USER")
+
+  def info(:build_number),
+    do: first_non_empty([get_env("BUILD_NUMBER"), get_env("BUILD_N")])
 
   def info(:system_elixir), do: System.build_info()[:version]
   def info(:system_otp), do: System.build_info()[:otp_release]
@@ -194,10 +199,24 @@ defmodule SayCheezEx do
   CWD is the root of the repo.
   """
 
-  def git_run(subcmd) when is_list(subcmd) do
-    case System.cmd("git", subcmd) do
-      {tag, 0} ->
-        String.trim(tag)
+  def git_run(subcmd), do: run_cmd("git", subcmd)
+
+  @doc """
+  Reads a hostname.
+  """
+  def hostname(), do: run_cmd("hostname", [])
+
+  @doc """
+  Runs a command.
+
+  Returns the output, only if return code is zero.
+
+  Otherwise returns "@unknown_entry"
+  """
+  def run_cmd(cmd, parameters) when is_list(parameters) do
+    case System.cmd(cmd, parameters) do
+      {result, 0} ->
+        String.trim(result)
 
       _ ->
         @unknown_entry
@@ -247,6 +266,21 @@ defmodule SayCheezEx do
       s ->
         s
     end
+  end
+
+  @doc """
+  Given a list of candidates, returs the first that
+  is not unknown.
+
+  If all of them are unknown, return the default.
+
+  """
+
+  def first_non_empty(vars, def_val \\ @unknown_entry)
+      when is_list(vars) and is_binary(def_val) do
+    vars
+    |> Enum.filter(fn v -> v != @unknown_entry end)
+    |> List.first(def_val)
   end
 
   @doc """
