@@ -1,9 +1,9 @@
 # Changelog
 
 
-## 0.1.6 - ...
+## 0.2.0 - 2023.03.19
 
-- Compact string format (fixes #14 )
+- NEW! Compact string format (fixes #14)
 - Reading hostname (fixes #12) 
 
 ## 0.1.5 - 2023.03.09
