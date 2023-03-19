@@ -6,16 +6,18 @@ defmodule SayCheezEx do
   - Which build is this?
   - Who built this release?
   - When was this built?
-  - What was the Git sha for this build?
+  - What was the Git SHA for this build?
+
+  # Usage
 
   Make sure that you capture all elements you need to a
   module attribute - e.g.
 
   ```
     module Foo do
-      #  version: 0.1.1/7ea2260/230212.1425
-      @version SayCheezEx.info(:project_full_version)
-
+      import SayCheezEx, only: [cheez!: 1]
+      # e.g. "v 0.1.5/d9a87c3 137 on server.local"
+      @version cheez!("v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}")
       ...
     end
   ```
@@ -23,6 +25,13 @@ defmodule SayCheezEx do
   Data gathering **must** be  done at compile time and will
   simply create a string once and for all that matches
   your informational need.
+
+  This can be done in multiple ways:
+
+  - You can call the `cheez!/1` function with a format
+    string - see below
+  - You can call `info/1` and `env/1` to extract the specific
+    parameters you need.
 
   See `info/1` for  list of allowed attributes, or `all/0` for
   a map with all pre-defined attributes.
@@ -73,10 +82,6 @@ defmodule SayCheezEx do
 
    - build_number: "86" - the value of the `BUILD_NUMBER` attribute
 
-
-
-
-
   """
 
   def info(:git_commit_id), do: git_run(@git_log ++ ["--pretty=%h"])
@@ -118,6 +123,8 @@ defmodule SayCheezEx do
   def info(:system_elixir), do: System.build_info()[:version]
   def info(:system_otp), do: System.build_info()[:otp_release]
   def info(:system), do: "#{info(:system_elixir)}/OTP#{info(:system_otp)}"
+
+  def info(_), do: @unknown_entry
 
   @spec all :: map
   @doc """
@@ -284,22 +291,72 @@ defmodule SayCheezEx do
   end
 
   @doc """
-  TO BE DONE.
+  Tokenizes a string into a list.
 
-
-  SayCheezEx.msg(["Hello ", :system, " how are you?" ])
 
 
 
   """
-  def msg(tokens) when is_list(tokens) do
-    tokens
-    |> Enum.map_join(fn
-      t when is_binary(t) -> t
-      k when is_atom(k) -> info(k)
-      e when is_list(e) -> get_env(e)
+
+  def tokenize(s, env \\ [])
+  def tokenize("", env), do: env
+
+  def tokenize(s, env) do
+    case Regex.run(~r/^(.*?)\{(.+?)\}(.*)$/, s) do
+      [_, text, tokens, rest] ->
+        tokenize(rest, env ++ [text, tokenize_kws(tokens)])
+
+      _ ->
+        env ++ [s]
+    end
+  end
+
+  @doc """
+  Breaks up a list of keywords into tuples.
+
+  """
+  def tokenize_kws(kws) do
+    kws
+    |> String.split(~r/,/)
+    |> Enum.map(fn kw ->
+      case Regex.run(~r/^(.)(.+)$/, kw) do
+        [_, "$", v] -> {:env, v}
+        [_, ":", v] -> {:kw, String.to_atom(v)}
+        [_, "=", v] -> {:default, v}
+      end
     end)
   end
+
+  @doc """
+  Expands a sequence of tokens into a string.
+  """
+
+  def expand(tokenized_seq) do
+    tokenized_seq
+    |> Enum.map_join(fn
+      i when is_binary(i) ->
+        i
+
+      l when is_list(l) ->
+        l
+        |> Enum.map(fn
+          {:kw, a} -> info(a)
+          {:env, e} -> get_env(e)
+          {:default, e} -> e
+        end)
+        |> first_non_empty()
+    end)
+  end
+
+  @doc """
+
+
+  """
+  def cheez!(s) when is_binary(s),
+    do:
+      s
+      |> tokenize()
+      |> expand()
 
   @doc """
   Creates a date out of an ISO date.

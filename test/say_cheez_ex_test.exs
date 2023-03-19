@@ -104,4 +104,43 @@ defmodule SayCheezExTest do
 
     assert "k" = SayCheezEx.first_non_empty([], "k")
   end
+
+  describe "Tokenizer" do
+    test "Plain" do
+      assert [
+               "v1 ",
+               [{:kw, :abc}],
+               "-",
+               [{:env, "DE"}, {:kw, :fg}],
+               "!"
+             ] = SayCheezEx.tokenize("v1 {:abc}-{$DE,:fg}!")
+    end
+
+    test "No tokens" do
+      assert [
+               "v1"
+             ] = SayCheezEx.tokenize("v1")
+    end
+
+    test "Just a token" do
+      assert [
+               "",
+               [{:kw, :abc}]
+             ] = SayCheezEx.tokenize("{:abc}")
+    end
+
+    test "Expander" do
+      System.put_env("EA", "10")
+
+      assert "a: ? - b: 10" =
+               SayCheezEx.tokenize("a: {:abc} - b: {$EB,$EA}")
+               |> SayCheezEx.expand()
+    end
+
+    test "Expander with defaults" do
+      assert "a: NONE" =
+               SayCheezEx.tokenize("a: {:abc,=NONE}")
+               |> SayCheezEx.expand()
+    end
+  end
 end

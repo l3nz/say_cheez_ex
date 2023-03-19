@@ -3,6 +3,7 @@
 
 ## 0.1.6 - ...
 
+- Compact string format (fixes #14 )
 - Reading hostname (fixes #12) 
 
 ## 0.1.5 - 2023.03.09
