@@ -38,12 +38,12 @@ For example:
 
 ```
 module Foo do
-        # v 0.1.1 0123456 87
-        @version_short "v #{SayCheezEx.info(:project_version)} #{SayCheezEx.info(:git_commit_id)}
-        #{SayCheezEx.info(:build_number)}"
-        
+        import SayCheezEx, only: [cheez!: 1]
+        # e.g. "v 0.1.5/d9a87c3 137 on server.local"
+        @version cheez!("v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}")
+      
         # MyProject-0.1.1
-        @user_agent "#{SayCheezEx.info(:project_name)}-#{SayCheezEx.info(:project_version)}"
+        @user_agent cheez!("{:project_name}-{:project_version}")
 
         ...
 end
@@ -52,6 +52,20 @@ end
 Always make sure that you assign those values to an attibute - **never call those functions directly**.
 
 You can safely create such attributes in all modules that need them, as they are just one (usually very small) binary.
+
+Strings composed through `cheez!` will interpolate attributes
+between brackets, with the following rules:
+
+- `{:project_version}` is an info tag. These is a long 
+   list of those - see below.
+- `{$HOST}` is the environment variable HOST
+- `{=HELLO}` is a default value, in this case the literal string "HELLO"
+- If multiple attributes are specified, they all are expanded,
+  and the first one that is defined will be output. So e.g.
+  `{$FOO,$BAR,=BAZ}` will first try to interpolate the variable FOO;
+  if that is undefined, it will try BAR, and if that too is undefined,
+  it will output "BAZ" (that is always defined)
+
 
 ### What is available
 
@@ -94,7 +108,6 @@ map with all available attributes:
 
 # Roadmap
 
-- Capture arbitrary environment variables at build time. 
 - Display runtime information (memory, cpu) in a compact and handy way
 
 
