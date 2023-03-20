@@ -6,3 +6,7 @@ mix test
 mix credo
 
 mix dialyzer
+
+
+mix hex.publish
+
