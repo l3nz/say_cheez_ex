@@ -9,9 +9,10 @@ It can also be useful to run a pipeline once when building, e.g. compiling a SAS
 This library is heavily ispired by my previous (and very useful) Clojure library https://github.com/l3nz/say-cheez
 
 
-![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)
+[![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
 ![Hex.pm](https://img.shields.io/hexpm/dt/say_cheez_ex)
 ![Hex.pm](https://img.shields.io/hexpm/l/say_cheez_ex)
+
 
 
 ## Installing
