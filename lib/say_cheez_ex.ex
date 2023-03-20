@@ -28,9 +28,9 @@ defmodule SayCheezEx do
 
   This can be done in multiple ways:
 
-  - You can call the `cheez!/1` function with a format
-    string - see below
-  - You can call `info/1` and `env/1` to extract the specific
+  - You can call the `cheez!/1` or `cheez/1` functions with a format
+    string, as described in their docs
+  - You can call `info/1` and `get_env/1` to extract the specific
     parameters you need.
 
   See `info/1` for  list of allowed attributes, or `all/0` for
@@ -349,14 +349,58 @@ defmodule SayCheezEx do
   end
 
   @doc """
+  Captures the environment from a definition string.
 
+  Same as `cheez!/1` but it does not print the
+  captured string.
 
   """
-  def cheez!(s) when is_binary(s),
+  def cheez(s) when is_binary(s),
     do:
       s
       |> tokenize()
       |> expand()
+
+  @doc """
+  Captures the environment from a definition string, and
+  prints it out so it is shown in the compile logs.
+
+  Usage:
+
+        > cheez!("v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}")
+        "v 0.1.5/d9a87c3 137 on server.local"
+
+  ## Definition strings
+
+
+  This function will interpolate attributes set
+  between brackets, with the following rules:
+
+  - `{:project_version}` is an info tag. These is a long
+   list of those - see `all/0`.
+  - `{$HOST}` is an environment variable - in this case, HOST
+  - `{=HELLO}` is a default value, in this case the literal string "HELLO"
+
+  If multiple attributes are specified in a comma-separated string,
+   they all are expanded,
+  and the first one that is defined will be output. So e.g.
+  `{$FOO,$BAR,=BAZ}` will first try to interpolate the variable FOO;
+  if that is undefined, it will try BAR, and if that too is undefined,
+  it will output "BAZ" (that is always defined)
+
+  ## See also
+
+  - If you don't want this fuction to print out the captured
+  environment, just use `cheez/1`.
+
+
+  """
+
+  def cheez!(s) when is_binary(s) do
+    cs = cheez(s)
+    IO.puts("-- 📸 '#{cs}'")
+    s
+  end
 
   @doc """
   Creates a date out of an ISO date.
@@ -366,7 +410,7 @@ defmodule SayCheezEx do
   versions (e.g. Centos7 still has git 1.8).
 
   So we basically break a date of the format `2023-02-15 08:50:19 +0100`
-  into a set of tonkens, and reassemble them based on a list of input
+  into a set of tokens, and reassemble them based on a list of input
   tokens or constant strings.
 
   """

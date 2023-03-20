@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2023.03.20
+
+- Separated functions `cheez!` and `cheez`, where the first one
+  prints out on standard out the captured string (as to earmark the compile log)
+- Improved documentation 
 
 ## 0.2.0 - 2023.03.19
 
