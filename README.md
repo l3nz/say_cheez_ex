@@ -20,7 +20,7 @@ This library is heavily ispired by my previous (and very useful) Clojure library
 
 Just add to your `mix.exs` file:
 
-        {:say_cheez_ex, "~> 0.1"}
+        {:say_cheez_ex, "~> 0.2"}
 
 
 - Full documentation: https://hexdocs.pm/say_cheez_ex
