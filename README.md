@@ -10,8 +10,9 @@ This library is heavily ispired by my previous (and very useful) Clojure library
 
 
 [![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
-![Hex.pm](https://img.shields.io/hexpm/dt/say_cheez_ex)
-![Hex.pm](https://img.shields.io/hexpm/l/say_cheez_ex)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/say_cheez_ex)
+[![Hex.pm](https://img.shields.io/hexpm/dt/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
+[![Hex.pm](https://img.shields.io/hexpm/l/say_cheez_ex)](https://github.com/l3nz/say_cheez_ex/blob/main/LICENSE)
 
 
 
