@@ -105,6 +105,20 @@ defmodule SayCheezExTest do
     assert "k" = SayCheezEx.first_non_empty([], "k")
   end
 
+  describe "fn cheez:" do
+    test "cheez()" do
+      assert :ok =
+               SayCheezEx.cheez("x {:build_at}")
+               |> date_matches?("x nnnnnn.nnnn")
+    end
+
+    test "cheez!()" do
+      assert :ok =
+               SayCheezEx.cheez!("x {:build_at}")
+               |> date_matches?("x nnnnnn.nnnn")
+    end
+  end
+
   describe "Tokenizer" do
     test "Plain" do
       assert [

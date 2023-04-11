@@ -399,7 +399,7 @@ defmodule SayCheezEx do
   def cheez!(s) when is_binary(s) do
     cs = cheez(s)
     IO.puts("-- 📸 '#{cs}'")
-    s
+    cs
   end
 
   @doc """
