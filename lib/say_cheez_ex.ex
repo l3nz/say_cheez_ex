@@ -82,6 +82,18 @@ defmodule SayCheezEx do
 
    - build_number: "86" - the value of the `BUILD_NUMBER` attribute
 
+  ### System environment
+
+    - `sysinfo_arch`: the system architecture  (e.g. _"aarch64-apple-darwin22.3.0"_)
+    - `sysinfo_beam`: the type of VM, whether it's a JIT or interpreter, and its version (e.g. _"BEAM jit 13.2"_)
+    - `sysinfo_banner`: the "welcome banner" that the VM prints on startup (e.g. _"Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:10:10] [ds:10:10:10] [async-threads:1] [jit]"_)
+    - `sysinfo_c_compiler`: the system C compiler used to build the VM  (e.g. _"gnuc 4.2.1"_)
+    - `sysinfo_compat`: the Erlang/OTP release that the current emulator has been set to be backward compatible with  (e.g. _"25"_)
+    - `sysinfo_driver`: Erlang driver version used by the runtime system (e.g. _"3.3"_)
+    - `sysinfo_nif`: version of the Erlang NIF interface (e.g. _"2.16"_)
+    - `sysinfo_ptr`: the size of Erlang term words in bits (e.g. _"64bit"_)
+    - `sysinfo_word`: the size of an emulator pointer in bits (e.g. _"64bit"_)
+
   """
 
   def info(:git_commit_id), do: git_run(@git_log ++ ["--pretty=%h"])
@@ -124,6 +136,24 @@ defmodule SayCheezEx do
   def info(:system_otp), do: System.build_info()[:otp_release]
   def info(:system), do: "#{info(:system_elixir)}/OTP#{info(:system_otp)}"
 
+  def info(:sysinfo_beam),
+    do:
+      "#{:erlang.system_info(:machine)} #{:erlang.system_info(:emu_flavor)} #{:erlang.system_info(:version)}"
+
+  def info(:sysinfo_word), do: "#{:erlang.system_info({:wordsize, :internal}) * 8}bit"
+  def info(:sysinfo_ptr), do: "#{:erlang.system_info({:wordsize, :external}) * 8}bit"
+  def info(:sysinfo_nif), do: "#{:erlang.system_info(:nif_version)}"
+
+  def info(:sysinfo_c_compiler) do
+    {cc, {ma, mi, no}} = :erlang.system_info(:c_compiler_used)
+    "#{cc} #{ma}.#{mi}.#{no}"
+  end
+
+  def info(:sysinfo_compat), do: "#{:erlang.system_info(:compat_rel)}"
+  def info(:sysinfo_driver), do: "#{:erlang.system_info(:driver_version)}"
+  def info(:sysinfo_arch), do: "#{:erlang.system_info(:system_architecture)}"
+  def info(:sysinfo_banner), do: "#{:erlang.system_info(:system_version)}" |> String.trim()
+
   def info(_), do: @unknown_entry
 
   @spec all :: map
@@ -138,26 +168,37 @@ defmodule SayCheezEx do
 
   ````
   %{
-    build_at: "230213.1617",
-    build_at_day: "2023-02-13",
-    build_at_full: "2023-02-13.16:17:55",
+    build_at: "230411.1528",
+    build_at_day: "2023-04-11",
+    build_at_full: "2023-04-11.15:28:47",
     build_by: "lenz",
     build_number: "?",
-    build_on: "?",
-    git_all: "8c0449f/230213.1621",
-    git_commit_id: "8c0449f",
-    git_commit_id_full: "8c0449fdffc5da6f68237ce8d542ae69ac268cad",
-    git_date: "2023-02-13.16:21:12",
-    git_date_compact: "230213.1621",
+    build_on: "Lenzs-MacBook-Pro.local",
+    git_all: "b204919/230411.1509",
+    git_commit_id: "b204919",
+    git_commit_id_full: "b2049190312ef810875476398978c2b0387251d3",
+    git_date: "2023-04-11.15:09:50",
+    git_date_compact: "230411.1509",
     git_last_committer: "Lenz",
-    project_full_version: "0.1.0-dev/8c0449f/230213.1621",
-    project_name: :say_cheez_ex,
-    project_version: "0.1.0-dev",
-    system: "1.13.4/OTP25",
-    system_elixir: "1.13.4",
-    system_otp: "25"
+    project_full_version: "0.2.1/b204919/230411.1509",
+    project_name: "SayCheezEx",
+    project_version: "0.2.2",
+    sysinfo_arch: "aarch64-apple-darwin22.3.0",
+    sysinfo_beam: "BEAM jit 13.2",
+    sysinfo_c_compiler: "gnuc 4.2.1",
+    sysinfo_compat: "25",
+    sysinfo_driver: "3.3",
+    sysinfo_nif: "2.16",
+    sysinfo_ptr: "64bit",
+    sysinfo_word: "64bit",
+    system: "1.14.3/OTP25",
+    system_elixir: "1.14.3",
+    system_otp: "25",
+    ...
   }
   ````
+
+  but the right place to check all properties and their meaning is `info/1`.
 
 
   """
@@ -181,7 +222,16 @@ defmodule SayCheezEx do
         :build_number,
         :system_elixir,
         :system_otp,
-        :system
+        :system,
+        :sysinfo_beam,
+        :sysinfo_word,
+        :sysinfo_ptr,
+        :sysinfo_nif,
+        :sysinfo_c_compiler,
+        :sysinfo_compat,
+        :sysinfo_driver,
+        :sysinfo_arch,
+        :sysinfo_banner
       ])
 
   @spec all(maybe_improper_list) :: map

@@ -74,6 +74,8 @@ between brackets, with the following rules:
 - The name of this project, its version, the version of Elixir and OTP
 - When the project was built, where was it built and by which user, the build number (if available)
 - The current Git SHA that was built, when the last commit was made and by whom.
+- A set of properties aboz the current BEAM VM (architecture, word size, etc.)
+- The host name that this project was built on
 
 See https://hexdocs.pm/say_cheez_ex/SayCheezEx.html#info/1 for a full list.
 
@@ -83,23 +85,32 @@ map with all available attributes:
 
 ````
 %{
-  project_name: "SayCheezEx",
-  project_version: "0.1.0-dev",
-  build_at: "230213.1617",
-  build_at_day: "2023-02-13",
-  build_at_full: "2023-02-13.16:17:55",
+  build_at: "230411.1538",
+  build_at_day: "2023-04-11",
+  build_at_full: "2023-04-11.15:38:40",
   build_by: "lenz",
-  build_number: "36",
-  build_on: "zebra03",
-  git_all: "8c0449f/230213.1621",
-  git_commit_id: "8c0449f",
-  git_commit_id_full: "8c0449fdffc5da6f68237ce8d542ae69ac268cad",
-  git_date: "2023-02-13.16:21:12",
-  git_date_compact: "230213.1621",
+  build_number: "87",
+  build_on: "MacBook-Pro.local",
+  git_all: "b204919/230411.1509",
+  git_commit_id: "b204919",
+  git_commit_id_full: "b2049190312ef810875476398978c2b0387251d3",
+  git_date: "2023-04-11.15:09:50",
+  git_date_compact: "230411.1509",
   git_last_committer: "Lenz",
-  project_full_version: "0.1.0-dev/8c0449f/230213.1621",
-  system: "1.13.4/OTP25",
-  system_elixir: "1.13.4",
+  project_full_version: "0.2.1/b204919/230411.1509",
+  project_name: "SayCheezEx",
+  project_version: "0.2.1",
+  sysinfo_arch: "aarch64-apple-darwin22.3.0",
+  sysinfo_banner: "Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:10:10] [ds:10:10:10] [async-threads:1] [jit]",
+  sysinfo_beam: "BEAM jit 13.2",
+  sysinfo_c_compiler: "gnuc 4.2.1",
+  sysinfo_compat: "25",
+  sysinfo_driver: "3.3",
+  sysinfo_nif: "2.16",
+  sysinfo_ptr: "64bit",
+  sysinfo_word: "64bit",
+  system: "1.14.3/OTP25",
+  system_elixir: "1.14.3",
   system_otp: "25",
   ....
 }
