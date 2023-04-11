@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 - 2023.04.11
+
+* Fixes #16 - _major bug_: cheez!() returned source string instead of expanded
+* Fixes #15 - Capture mix.env
+* Fixes #13 - Compiled architecture and BEAM attributes
+
+
 ## 0.2.1 - 2023.03.20
 
 - Separated functions `cheez!` and `cheez`, where the first one
