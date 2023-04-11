@@ -76,6 +76,7 @@ between brackets, with the following rules:
 - The current Git SHA that was built, when the last commit was made and by whom.
 - A set of properties aboz the current BEAM VM (architecture, word size, etc.)
 - The host name that this project was built on
+- The mix environment that this project was built in (e.g. "prod" or "dev" or "test")
 
 See https://hexdocs.pm/say_cheez_ex/SayCheezEx.html#info/1 for a full list.
 
@@ -91,6 +92,7 @@ map with all available attributes:
   build_by: "lenz",
   build_number: "87",
   build_on: "MacBook-Pro.local",
+  build_mix_env: "dev",
   git_all: "b204919/230411.1509",
   git_commit_id: "b204919",
   git_commit_id_full: "b2049190312ef810875476398978c2b0387251d3",

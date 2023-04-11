@@ -81,6 +81,10 @@ defmodule SayCheezExTest do
       # in mix.exs, it is :say_cheez_ex
       assert "SayCheezEx" = SayCheezEx.info(:project_name)
     end
+
+    test "mix env" do
+      assert "test" = SayCheezEx.info(:build_mix_env)
+    end
   end
 
   describe "Environment variables:" do

@@ -77,6 +77,7 @@ defmodule SayCheezEx do
    - build_by: "jenkins"  - the user that was running on the build server
    - build_on: "intserver03" - the server the release was built on.
      First checks `hostname` then the environment variable `HOST`
+   - `build_mix_env`: the mix build environament, as a string (e.g. _"dev"_ or _"prod"_)
 
   ### Jenkins-specific
 
@@ -132,6 +133,9 @@ defmodule SayCheezEx do
   def info(:build_number),
     do: first_non_empty([get_env("BUILD_NUMBER"), get_env("BUILD_N")])
 
+  def info(:build_mix_env),
+    do: "#{Mix.env()}"
+
   def info(:system_elixir), do: System.build_info()[:version]
   def info(:system_otp), do: System.build_info()[:otp_release]
   def info(:system), do: "#{info(:system_elixir)}/OTP#{info(:system_otp)}"
@@ -172,8 +176,9 @@ defmodule SayCheezEx do
     build_at_day: "2023-04-11",
     build_at_full: "2023-04-11.15:28:47",
     build_by: "lenz",
-    build_number: "?",
+    build_number: "87",
     build_on: "Lenzs-MacBook-Pro.local",
+    build_mix_env: "dev",
     git_all: "b204919/230411.1509",
     git_commit_id: "b204919",
     git_commit_id_full: "b2049190312ef810875476398978c2b0387251d3",
@@ -220,6 +225,7 @@ defmodule SayCheezEx do
         :build_on,
         :build_by,
         :build_number,
+        :build_mix_env,
         :system_elixir,
         :system_otp,
         :system,
