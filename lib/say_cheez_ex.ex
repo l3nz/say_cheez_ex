@@ -2,17 +2,17 @@ defmodule SayCheezEx do
   @moduledoc """
   This module is used to retrieve assorted pieces of
   configuration from a release's build environment.
-
+  
   - Which build is this?
   - Who built this release?
   - When was this built?
   - What was the Git SHA for this build?
-
+  
   # Usage
-
+  
   Make sure that you capture all elements you need to a
   module attribute - e.g.
-
+  
   ```
     module Foo do
       import SayCheezEx, only: [cheez!: 1]
@@ -21,21 +21,21 @@ defmodule SayCheezEx do
       ...
     end
   ```
-
+  
   Data gathering **must** be  done at compile time and will
   simply create a string once and for all that matches
   your informational need.
-
+  
   This can be done in multiple ways:
-
+  
   - You can call the `cheez!/1` or `cheez/1` functions with a format
     string, as described in their docs
   - You can call `info/1` and `get_env/1` to extract the specific
     parameters you need.
-
+  
   See `info/1` for  list of allowed attributes, or `all/0` for
   a map with all pre-defined attributes.
-
+  
   """
 
   @now NaiveDateTime.local_now()
@@ -45,22 +45,22 @@ defmodule SayCheezEx do
   @spec info(atom) :: binary
   @doc """
   Gets assorted pieces of system information.
-
+  
   ## Project
-
+  
   -  project_name: "SayCheezEx" - the project will be named with an atom
      as `:say_cheez_ex`, but we return a camelized string
   -  project_version: "0.1.0-dev",
   - project_full_version:  "0.1.0-dev/7ea2260/230212.1425",
-
+  
   ### Elixir - Erlang
-
+  
   - system: "1.13.4/OTP25",
   - system_elixir: "1.13.4",
   - system_otp: "25"
-
+  
   ## Git
-
+  
    - git_all: "7ea2260/230212.1425" - a
      recap of commit id and date compact
    - git_commit_id: "7ea2260" - the short commit-id
@@ -68,9 +68,9 @@ defmodule SayCheezEx do
    - git_date: "2023-02-12.14:25:47" - the date if last commit
    - git_date_compact: "230212.1425" - the compact date of last commit
    - git_last_committer: "Lenz" - the author of last commit
-
+  
   ## Build information
-
+  
    - build_at: "230213.1545" - a short date of when the release was built
    - build_at_day: "2023-02-13" - the day a release was built
    - build_at_full: "2023-02-13.15:45:08" - the exact time a release was built
@@ -78,13 +78,13 @@ defmodule SayCheezEx do
    - build_on: "intserver03" - the server the release was built on.
      First checks `hostname` then the environment variable `HOST`
    - `build_mix_env`: the mix build environament, as a string (e.g. _"dev"_ or _"prod"_)
-
+  
   ### Jenkins-specific
-
+  
    - build_number: "86" - the value of the `BUILD_NUMBER` attribute
-
+  
   ### System environment
-
+  
     - `sysinfo_arch`: the system architecture  (e.g. _"aarch64-apple-darwin22.3.0"_)
     - `sysinfo_beam`: the type of VM, whether it's a JIT or interpreter, and its version (e.g. _"BEAM jit 13.2"_)
     - `sysinfo_banner`: the "welcome banner" that the VM prints on startup (e.g. _"Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:10:10] [ds:10:10:10] [async-threads:1] [jit]"_)
@@ -94,7 +94,7 @@ defmodule SayCheezEx do
     - `sysinfo_nif`: version of the Erlang NIF interface (e.g. _"2.16"_)
     - `sysinfo_ptr`: the size of Erlang term words in bits (e.g. _"64bit"_)
     - `sysinfo_word`: the size of an emulator pointer in bits (e.g. _"64bit"_)
-
+  
   """
 
   def info(:git_commit_id), do: git_run(@git_log ++ ["--pretty=%h"])
@@ -149,8 +149,8 @@ defmodule SayCheezEx do
   def info(:sysinfo_nif), do: "#{:erlang.system_info(:nif_version)}"
 
   def info(:sysinfo_c_compiler) do
-    {cc, {ma, mi, no}} = :erlang.system_info(:c_compiler_used)
-    "#{cc} #{ma}.#{mi}.#{no}"
+    {cc, version} = :erlang.system_info(:c_compiler_used)
+    "#{cc} #{inspect(version)}"
   end
 
   def info(:sysinfo_compat), do: "#{:erlang.system_info(:compat_rel)}"
@@ -164,12 +164,12 @@ defmodule SayCheezEx do
   @doc """
   Dumps a map of all known build/env configuration
   keys for this environment.
-
+  
   If you want a map of only some elements, see
   `all/1`.
-
+  
   An example output might be:
-
+  
   ````
   %{
     build_at: "230411.1528",
@@ -202,10 +202,10 @@ defmodule SayCheezEx do
     ...
   }
   ````
-
+  
   but the right place to check all properties and their meaning is `info/1`.
-
-
+  
+  
   """
   def all(),
     do:
@@ -243,11 +243,11 @@ defmodule SayCheezEx do
   @spec all(maybe_improper_list) :: map
   @doc """
   Prints a map of only some elements.
-
+  
   If you want a map of all elements, see
   `all/0`.
-
-
+  
+  
   """
   def all(elems) when is_list(elems) do
     elems
@@ -258,7 +258,7 @@ defmodule SayCheezEx do
   @spec git_run([binary]) :: binary
   @doc """
   Runs current Git command.
-
+  
   CWD is the root of the repo.
   """
 
@@ -271,9 +271,9 @@ defmodule SayCheezEx do
 
   @doc """
   Runs a command.
-
+  
   Returns the output, only if return code is zero.
-
+  
   Otherwise returns "@unknown_entry"
   """
   def run_cmd(cmd, parameters) when is_list(parameters) do
@@ -288,7 +288,7 @@ defmodule SayCheezEx do
 
   @doc """
   Reads an ISO date from Git.
-
+  
   See `date_from_iso_date/2`
   """
   def git_iso_date(),
@@ -334,9 +334,9 @@ defmodule SayCheezEx do
   @doc """
   Given a list of candidates, returs the first that
   is not unknown.
-
+  
   If all of them are unknown, return the default.
-
+  
   """
 
   def first_non_empty(vars, def_val \\ @unknown_entry)
@@ -348,10 +348,10 @@ defmodule SayCheezEx do
 
   @doc """
   Tokenizes a string into a list.
-
-
-
-
+  
+  
+  
+  
   """
 
   def tokenize(s, env \\ [])
@@ -369,7 +369,7 @@ defmodule SayCheezEx do
 
   @doc """
   Breaks up a list of keywords into tuples.
-
+  
   """
   def tokenize_kws(kws) do
     kws
@@ -406,10 +406,10 @@ defmodule SayCheezEx do
 
   @doc """
   Captures the environment from a definition string.
-
+  
   Same as `cheez!/1` but it does not print the
   captured string.
-
+  
   """
   def cheez(s) when is_binary(s),
     do:
@@ -420,36 +420,36 @@ defmodule SayCheezEx do
   @doc """
   Captures the environment from a definition string, and
   prints it out so it is shown in the compile logs.
-
+  
   Usage:
-
+  
         > cheez!("v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}")
         "v 0.1.5/d9a87c3 137 on server.local"
-
+  
   ## Definition strings
-
-
+  
+  
   This function will interpolate attributes set
   between brackets, with the following rules:
-
+  
   - `{:project_version}` is an info tag. These is a long
    list of those - see `all/0`.
   - `{$HOST}` is an environment variable - in this case, HOST
   - `{=HELLO}` is a default value, in this case the literal string "HELLO"
-
+  
   If multiple attributes are specified in a comma-separated string,
    they all are expanded,
   and the first one that is defined will be output. So e.g.
   `{$FOO,$BAR,=BAZ}` will first try to interpolate the variable FOO;
   if that is undefined, it will try BAR, and if that too is undefined,
   it will output "BAZ" (that is always defined)
-
+  
   ## See also
-
+  
   - If you don't want this fuction to print out the captured
   environment, just use `cheez/1`.
-
-
+  
+  
   """
 
   def cheez!(s) when is_binary(s) do
@@ -460,15 +460,15 @@ defmodule SayCheezEx do
 
   @doc """
   Creates a date out of an ISO date.
-
+  
   We need to do this instead of giving git format options,
   as date formatting is not supported well by ancient git
   versions (e.g. Centos7 still has git 1.8).
-
+  
   So we basically break a date of the format `2023-02-15 08:50:19 +0100`
   into a set of tokens, and reassemble them based on a list of input
   tokens or constant strings.
-
+  
   """
 
   def date_from_iso_date(iso_date, fmt_list) when is_binary(iso_date) and is_list(fmt_list) do
