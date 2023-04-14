@@ -148,10 +148,10 @@ defmodule SayCheezEx do
   def info(:sysinfo_ptr), do: "#{:erlang.system_info({:wordsize, :external}) * 8}bit"
   def info(:sysinfo_nif), do: "#{:erlang.system_info(:nif_version)}"
 
-  def info(:sysinfo_c_compiler) do
-    {cc, {ma, mi, no}} = :erlang.system_info(:c_compiler_used)
-    "#{cc} #{ma}.#{mi}.#{no}"
-  end
+  def info(:sysinfo_c_compiler),
+    do:
+      :erlang.system_info(:c_compiler_used)
+      |> format_sysinfo_c_compiler()
 
   def info(:sysinfo_compat), do: "#{:erlang.system_info(:compat_rel)}"
   def info(:sysinfo_driver), do: "#{:erlang.system_info(:driver_version)}"
@@ -159,6 +159,22 @@ defmodule SayCheezEx do
   def info(:sysinfo_banner), do: "#{:erlang.system_info(:system_version)}" |> String.trim()
 
   def info(_), do: @unknown_entry
+
+  @doc """
+  As the C compiler is formatted differently on Win and Unix,
+  we handle both cases with a related unit test, so we can add (and test) more.
+
+  """
+  def format_sysinfo_c_compiler({cc, v}) when is_tuple(v),
+    do: format_sysinfo_c_compiler({cc, tuple_to_dotted(v)})
+
+  def format_sysinfo_c_compiler({cc, v}), do: "#{cc} #{v}"
+
+  defp tuple_to_dotted(t),
+    do:
+      t
+      |> Tuple.to_list()
+      |> Enum.join(".")
 
   @spec all :: map
   @doc """

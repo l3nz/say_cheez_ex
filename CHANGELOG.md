@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 - ...
+
+* Fixes #18 - C Compiler attribute would not work on Windows. Thanks @milangupta1 
+
+
 ## 0.2.2 - 2023.04.11
 
 * Fixes #16 - _major bug_: cheez!() returned source string instead of expanded

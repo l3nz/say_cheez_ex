@@ -85,6 +85,11 @@ defmodule SayCheezExTest do
     test "mix env" do
       assert "test" = SayCheezEx.info(:build_mix_env)
     end
+
+    test "sysinfo_c_compiler" do
+      assert "gnuc 4.2.1" = SayCheezEx.format_sysinfo_c_compiler({:gnuc, {4, 2, 1}})
+      assert "msc 1926" = SayCheezEx.format_sysinfo_c_compiler({:msc, 1926})
+    end
   end
 
   describe "Environment variables:" do
