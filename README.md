@@ -4,9 +4,7 @@ Captures a snapshot of the environment at build time, so you can display it at r
 
 Sometimes you'd want to reference the version of your package at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else.
 
-It can also be useful to run a pipeline once when building, e.g. compiling a SASS file into CSS and storing the result as a string.
-
-This library is heavily ispired by my previous (and very useful) Clojure library https://github.com/l3nz/say-cheez
+This library is heavily ispired by my previous Clojure library https://github.com/l3nz/say-cheez that has been proven useful over the years.
 
 
 [![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
@@ -16,16 +14,6 @@ This library is heavily ispired by my previous (and very useful) Clojure library
 
 
 
-## Installing
-
-Just add to your `mix.exs` file:
-
-        {:say_cheez_ex, "~> 0.2"}
-
-
-- Full documentation: https://hexdocs.pm/say_cheez_ex
-- Hex.pm: https://hex.pm/packages/say_cheez_ex
-
 ## Using
 
 Whenever you want to reference a version/build information,
@@ -33,19 +21,30 @@ create an Elixir attribute for the module and compute its value through SayCheez
 
 I often compute a "short" version number,
 an User-Agent for performing HTTP requests,
-and a long version that contains the full
+and a full version that contains the full
 build information.
 
 For example:
 
 ```
-module Foo do
+module Foo.Bar do
         import SayCheezEx, only: [cheez!: 1]
-        # e.g. "v 0.1.5/d9a87c3 137 on server.local"
-        @version cheez!("v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}")
+
+        # Create all attributes we need
+
+        # "v 0.1.5/d9a87c3 137 on server.local"
+        @version cheez!(
+                "v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}"
+        )
       
-        # MyProject-0.1.1
-        @user_agent cheez!("{:project_name}-{:project_version}")
+        # "0.1.5 d9a87c3/230411.1227 B:137/230411.1434/prod Ex:1.14.3/OTP25"
+        @version_full cheez!(
+                "{:project_version} {:git_all} B:{:build_number,=-}/{:build_at}/{:build_mix_env} Ex:{:system}"
+        )
+
+
+        # "Foo.Bar MyProject-0.1.1" 
+        @user_agent cheez!("#{__MODULE__} {:project_name}-{:project_version}")
 
         ...
 end
@@ -74,7 +73,7 @@ between brackets, with the following rules:
 - The name of this project, its version, the version of Elixir and OTP
 - When the project was built, where was it built and by which user, the build number (if available)
 - The current Git SHA that was built, when the last commit was made and by whom.
-- A set of properties aboz the current BEAM VM (architecture, word size, etc.)
+- A set of properties about the current BEAM VM (architecture, word size, etc.)
 - The host name that this project was built on
 - The mix environment that this project was built in (e.g. "prod" or "dev" or "test")
 
@@ -117,6 +116,17 @@ map with all available attributes:
   ....
 }
 ````
+
+
+## Installing
+
+Just add to your `mix.exs` file:
+
+        {:say_cheez_ex, "~> 0.2"}
+
+
+- Full documentation: https://hexdocs.pm/say_cheez_ex
+- Hex.pm: https://hex.pm/packages/say_cheez_ex
 
 
 

@@ -421,6 +421,22 @@ defmodule SayCheezEx do
   end
 
   @doc """
+  We want to rewrite ELixir module names so we can remove
+  the Elixir prefix.
+
+  From
+
+      "{:abc,=NONE} Elixir.My.Module {:abc,=NONE}"
+
+  To
+
+      "{:abc,=NONE} My.Module {:abc,=NONE}"
+
+
+  """
+  def replace_elixir_modules(s), do: Regex.replace(~r/Elixir\.([[:upper:]])/, s, "\\g{1}")
+
+  @doc """
   Captures the environment from a definition string.
 
   Same as `cheez!/1` but it does not print the
@@ -430,6 +446,7 @@ defmodule SayCheezEx do
   def cheez(s) when is_binary(s),
     do:
       s
+      |> replace_elixir_modules()
       |> tokenize()
       |> expand()
 
@@ -445,7 +462,8 @@ defmodule SayCheezEx do
   ## Definition strings
 
 
-  This function will interpolate attributes set
+
+  This function will **interpolate attributes** set
   between brackets, with the following rules:
 
   - `{:project_version}` is an info tag. These is a long
@@ -459,6 +477,13 @@ defmodule SayCheezEx do
   `{$FOO,$BAR,=BAZ}` will first try to interpolate the variable FOO;
   if that is undefined, it will try BAR, and if that too is undefined,
   it will output "BAZ" (that is always defined)
+
+
+  As it is quite a common thing to include a **module name** in the
+  string as it appears in the __MODULE__ attribute, and that will
+  print out the module with an "Elixir" prefix (e.g. module "Foo.Bar"
+  will become "Elixir.Foo.Bar"), the "Elixir" prefix is stripped
+  when found.
 
   ## See also
 

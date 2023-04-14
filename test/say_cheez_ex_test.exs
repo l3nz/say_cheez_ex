@@ -121,6 +121,11 @@ defmodule SayCheezExTest do
                |> date_matches?("x nnnnnn.nnnn")
     end
 
+    test "remove Elixir prefix" do
+      assert "NONE SayCheezExTest NONE" =
+               SayCheezEx.cheez("{:abc,=NONE} #{__MODULE__} {:abc,=NONE}")
+    end
+
     test "cheez!()" do
       assert :ok =
                SayCheezEx.cheez!("x {:build_at}")
@@ -164,6 +169,19 @@ defmodule SayCheezExTest do
       assert "a: NONE" =
                SayCheezEx.tokenize("a: {:abc,=NONE}")
                |> SayCheezEx.expand()
+    end
+
+    test "Replace Elixir modules" do
+      assert "a B.C" = SayCheezEx.replace_elixir_modules("a Elixir.B.C")
+
+      # none found
+      assert "a b c" = SayCheezEx.replace_elixir_modules("a b c")
+
+      # multiple times
+      assert "a B.C De.Ef" = SayCheezEx.replace_elixir_modules("a Elixir.B.C Elixir.De.Ef")
+
+      # This is not an ELixir module because it's not capitalized
+      assert "a Elixir.b.C" = SayCheezEx.replace_elixir_modules("a Elixir.b.C")
     end
   end
 end
