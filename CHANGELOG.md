@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.2.3 - ...
+## 0.2.3 - 2023.04.14
 
+* Fixes #20 - Remove Elixir prefix from module names
 * Fixes #18 - C Compiler attribute would not work on Windows. Thanks @milangupta1 
 
 
