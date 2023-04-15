@@ -2,10 +2,9 @@
 
 Captures a snapshot of the environment at build time, so you can display it at run-time.
 
-Sometimes you'd want to reference the version of your package at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else.
+Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else.
 
-This library is heavily ispired by my previous Clojure library https://github.com/l3nz/say-cheez that has been proven useful over the years.
-
+This library takes a lot of inspiration from an earlier Clojure library, which you can find at https://github.com/l3nz/say-cheez. The previous library has been very useful to me over the years, and I'm hoping that this one will be just as helpful!
 
 [![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/say_cheez_ex)
@@ -26,27 +25,28 @@ build information.
 
 For example:
 
-```
+```elixir
 module Foo.Bar do
-        import SayCheezEx, only: [cheez!: 1]
+  import SayCheezEx, only: [cheez!: 1]
 
-        # Create all attributes we need
+  # Create all attributes we need
 
-        # "v 0.1.5/d9a87c3 137 on server.local"
-        @version cheez!(
-                "v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}"
-        )
-      
-        # "0.1.5 d9a87c3/230411.1227 B:137/230411.1434/prod Ex:1.14.3/OTP25"
-        @version_full cheez!(
-                "{:project_version} {:git_all} B:{:build_number,=-}/{:build_at}/{:build_mix_env} Ex:{:system}"
-        )
+  # "v 0.1.5/d9a87c3 137 on server.local"
+  @version cheez!(
+    "v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}"
+  )
 
+  # "0.1.5 d9a87c3/230411.1227 B:137/230411.1434/prod Ex:1.14.3/OTP25"
+  @version_full cheez!(
+    "{:project_version} {:git_all} B:{:build_number,=-}/{:build_at}/{:build_mix_env} Ex:{:system}"
+  )
 
-        # "Foo.Bar MyProject-0.1.1" 
-        @user_agent cheez!("#{__MODULE__} {:project_name}-{:project_version}")
+  # "Foo.Bar MyProject-0.1.1" 
+  @user_agent cheez!(
+    "#{__MODULE__} {:project_name}-{:project_version}"
+  )
 
-        ...
+...
 end
 ```
 
@@ -67,6 +67,7 @@ between brackets, with the following rules:
   if that is undefined, it will try BAR, and if that too is undefined,
   it will output "BAZ" (that is always defined)
 
+They will also make sure that any module name embedded through `__MODULE__` appears as it does in Elixir.
 
 ### What is available
 
@@ -83,7 +84,7 @@ You can also call `SayCheezEx.all()` for a
 map with all available attributes:
 
 
-````
+```elixir
 %{
   build_at: "230411.1538",
   build_at_day: "2023-04-11",
@@ -115,15 +116,16 @@ map with all available attributes:
   system_otp: "25",
   ....
 }
-````
+```
 
 
 ## Installing
 
 Just add to your `mix.exs` file:
 
-        {:say_cheez_ex, "~> 0.2"}
-
+```elixir
+    {:say_cheez_ex, "~> 0.2"}
+```
 
 - Full documentation: https://hexdocs.pm/say_cheez_ex
 - Hex.pm: https://hex.pm/packages/say_cheez_ex
