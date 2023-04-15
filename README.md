@@ -2,7 +2,7 @@
 
 Captures a snapshot of the environment at build time, so you can display it at run-time.
 
-Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else.
+Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else. It could be in `git`, or in `mix`, or exposed as an Erlang system property... good luck remembering it all. With SayCheezEx, it's all in one place.
 
 This library takes a lot of inspiration from an earlier Clojure library, which you can find at https://github.com/l3nz/say-cheez. The previous library has been very useful to me over the years, and I'm hoping that this one will be just as helpful!
 
@@ -65,7 +65,7 @@ between brackets, with the following rules:
   and the first one that is defined will be output. So e.g.
   `{$FOO,$BAR,=BAZ}` will first try to interpolate the variable FOO;
   if that is undefined, it will try BAR, and if that too is undefined,
-  it will output "BAZ" (that is always defined)
+  it will output "BAZ" (that, being a default value, is always defined)
 
 They will also make sure that any module name embedded through `__MODULE__` appears as it does in Elixir.
 
