@@ -10,10 +10,12 @@ defmodule SayCheezEx.MixProject do
       version: @version,
       description: "Captures the environment 📸 at build time",
       package: package(),
+      dialyzer: dialyzer(),
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      docs: docs()
+      docs: docs(),
+      aliases: aliases()
     ]
   end
 
@@ -44,6 +46,14 @@ defmodule SayCheezEx.MixProject do
     ]
   end
 
+  # We have to add Mix in 
+  defp dialyzer do
+    [
+      plt_add_apps: [:mix],
+      plt_add_deps: [:mix]
+    ]
+  end
+
   defp docs do
     [
       # The main page in the docs, è il nome lowercase di una pagina
@@ -62,6 +72,13 @@ defmodule SayCheezEx.MixProject do
         _ ->
           ""
       end
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["cmd rm -rf ./_build", "clean", "deps.get"],
+      check: ["format", "credo", "dialyzer"]
     ]
   end
 end

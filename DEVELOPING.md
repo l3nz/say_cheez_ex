@@ -1,12 +1,25 @@
-iex  --cookie asdf -S mix
+On new project
+
+		mix setup
 
 
-mix test
+Open shell
 
-mix credo
-
-mix dialyzer
+		iex  --cookie asdf -S mix
 
 
-mix hex.publish
+Test
+
+		mix test
+
+
+Before commit (format + credo + dialyzer):
+
+
+		mix check
+
+Publish to hex
+
+
+		mix hex.publish
 
