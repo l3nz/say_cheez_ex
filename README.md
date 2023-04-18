@@ -29,24 +29,26 @@ For example:
 module Foo.Bar do
   import SayCheezEx, only: [cheez!: 1]
 
-  # Create all attributes we need
+  # Create all attributes we need:
 
+  # ...a version string
   # "v 0.1.5/d9a87c3 137 on server.local"
   @version cheez!(
     "v {:project_version}/{:git_commit_id} {:build_number} on {:build_on}"
   )
 
+  # ...a longer version string, with build ane Erlang information
   # "0.1.5 d9a87c3/230411.1227 B:137/230411.1434/prod Ex:1.14.3/OTP25"
   @version_full cheez!(
     "{:project_version} {:git_all} B:{:build_number,=-}/{:build_at}/{:build_mix_env} Ex:{:system}"
   )
 
-  # "Foo.Bar MyProject-0.1.1" 
+  # ...an HTTP user-agent to be used by this module
+  # "Foo.Bar MyProject-0.1.5" 
   @user_agent cheez!(
     "#{__MODULE__} {:project_name}-{:project_version}"
   )
-
-...
+  ...
 end
 ```
 
