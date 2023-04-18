@@ -1,4 +1,6 @@
 defmodule SayCheezEx do
+  alias SayCheezEx.DataSource.Beam
+
   @moduledoc """
   This module is used to retrieve assorted pieces of
   configuration from a release's build environment.
@@ -136,27 +138,27 @@ defmodule SayCheezEx do
   def info(:build_mix_env),
     do: "#{Mix.env()}"
 
-  def info(:system_elixir), do: System.build_info()[:version]
-  def info(:system_otp), do: System.build_info()[:otp_release]
+  def info(:system_elixir), do: Beam.build_info()[:version]
+  def info(:system_otp), do: Beam.build_info()[:otp_release]
   def info(:system), do: "#{info(:system_elixir)}/OTP#{info(:system_otp)}"
 
   def info(:sysinfo_beam),
     do:
-      "#{:erlang.system_info(:machine)} #{:erlang.system_info(:emu_flavor)} #{:erlang.system_info(:version)}"
+      "#{Beam.system_info(:machine)} #{Beam.system_info(:emu_flavor)} #{Beam.system_info(:version)}"
 
-  def info(:sysinfo_word), do: "#{:erlang.system_info({:wordsize, :internal}) * 8}bit"
-  def info(:sysinfo_ptr), do: "#{:erlang.system_info({:wordsize, :external}) * 8}bit"
-  def info(:sysinfo_nif), do: "#{:erlang.system_info(:nif_version)}"
+  def info(:sysinfo_word), do: "#{Beam.system_info({:wordsize, :internal}) * 8}bit"
+  def info(:sysinfo_ptr), do: "#{Beam.system_info({:wordsize, :external}) * 8}bit"
+  def info(:sysinfo_nif), do: "#{Beam.system_info(:nif_version)}"
 
   def info(:sysinfo_c_compiler),
     do:
-      :erlang.system_info(:c_compiler_used)
+      Beam.system_info(:c_compiler_used)
       |> format_sysinfo_c_compiler()
 
-  def info(:sysinfo_compat), do: "#{:erlang.system_info(:compat_rel)}"
-  def info(:sysinfo_driver), do: "#{:erlang.system_info(:driver_version)}"
-  def info(:sysinfo_arch), do: "#{:erlang.system_info(:system_architecture)}"
-  def info(:sysinfo_banner), do: "#{:erlang.system_info(:system_version)}" |> String.trim()
+  def info(:sysinfo_compat), do: "#{Beam.system_info(:compat_rel)}"
+  def info(:sysinfo_driver), do: "#{Beam.system_info(:driver_version)}"
+  def info(:sysinfo_arch), do: "#{Beam.system_info(:system_architecture)}"
+  def info(:sysinfo_banner), do: "#{Beam.system_info(:system_version)}" |> String.trim()
 
   def info(_), do: @unknown_entry
 

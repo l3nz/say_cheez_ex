@@ -1,6 +1,7 @@
 defmodule SayCheezExTest do
   # mix test test/say_cheez_ex_test.exs
-  use ExUnit.Case
+  use ExUnit.Case, async: true
+  use Mimic
   doctest SayCheezEx
 
   @moduledoc """
@@ -82,8 +83,75 @@ defmodule SayCheezExTest do
       assert "SayCheezEx" = SayCheezEx.info(:project_name)
     end
 
+    test "Derived from System.build_info:" do
+      SayCheezEx.DataSource.Beam
+      |> stub(:build_info, fn ->
+        %{
+          build: "1.14.3 (compiled with Erlang/OTP 25)",
+          date: "2023-01-14T15:30:14Z",
+          otp_release: "25x",
+          revision: "6730d66",
+          version: "1.14.2"
+        }
+      end)
+
+      assert "25x" = SayCheezEx.info(:system_otp)
+      assert "1.14.2" = SayCheezEx.info(:system_elixir)
+      assert "1.14.2/OTP25x" = SayCheezEx.info(:system)
+    end
+
     test "mix env" do
       assert "test" = SayCheezEx.info(:build_mix_env)
+    end
+
+    test "from :erlang.info()" do
+      SayCheezEx.DataSource.Beam
+      |> stub(:system_info, fn
+        {:wordsize, :internal} ->
+          8
+
+        {:wordsize, :external} ->
+          8
+
+        :nif_version ->
+          '2.16'
+
+        :c_compiler_used ->
+          {:gnuc, {4, 2, 1}}
+
+        :compat_rel ->
+          25
+
+        :driver_version ->
+          '3.3'
+
+        :system_architecture ->
+          'aarch64-apple-darwin22.3.0'
+
+        :system_version ->
+          'Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:10:10] [ds:10:10:10] [async-threads:1] [jit]\n'
+
+        :machine ->
+          'BEAM'
+
+        :emu_flavor ->
+          :jit
+
+        :version ->
+          '13.2'
+      end)
+
+      assert "BEAM jit 13.2" = SayCheezEx.info(:sysinfo_beam)
+      assert "64bit" = SayCheezEx.info(:sysinfo_word)
+      assert "64bit" = SayCheezEx.info(:sysinfo_ptr)
+      assert "2.16" = SayCheezEx.info(:sysinfo_nif)
+      assert "gnuc 4.2.1" = SayCheezEx.info(:sysinfo_c_compiler)
+      assert "25" = SayCheezEx.info(:sysinfo_compat)
+      assert "3.3" = SayCheezEx.info(:sysinfo_driver)
+      assert "aarch64-apple-darwin22.3.0" = SayCheezEx.info(:sysinfo_arch)
+
+      assert "Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:10:10] [ds:10:10:10] [async-threads:1] [jit]" =
+               SayCheezEx.info(:sysinfo_banner)
     end
 
     test "sysinfo_c_compiler" do

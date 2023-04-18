@@ -31,7 +31,8 @@ defmodule SayCheezEx.MixProject do
     [
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:mimic, "~> 1.7", only: :test}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
@@ -46,7 +47,7 @@ defmodule SayCheezEx.MixProject do
     ]
   end
 
-  # We have to add Mix in 
+  # We have to add Mix in
   defp dialyzer do
     [
       plt_add_apps: [:mix],
