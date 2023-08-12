@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 0.3.0 - 2023-08-12
+## 0.3.1 - 2023-08-12
 
 * Added initial support for Graphviz and PlantUML
 

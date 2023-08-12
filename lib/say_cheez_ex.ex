@@ -61,7 +61,7 @@ defmodule SayCheezEx do
 
       Here a PlantUML graph:
 
-      \#{uml(\""""
+      \#{uml("\""
         Bob -> Alice : I do love UML in documentation
         Alice -> Bob : me too!
       \""")}
@@ -72,6 +72,9 @@ defmodule SayCheezEx do
     end
   ```
 
+  At the moment ther eis no caching in the build, and
+  I would like to use an external server if no local tool
+  is available. But it works for now.
 
 
   """
@@ -573,10 +576,14 @@ defmodule SayCheezEx do
 
   """
 
-  def graphviz(s), do: Graphviz.render(s)
+  def graphviz(s) do
+    {:ok, md} = Graphviz.render(s)
+    md
+  end
 
   @doc """
-  PlantUML https://plantuml.com/
+  You can find PlantUML https://plantuml.com/
+
 
 
   #{Plantuml.demo_render!("Bob -> Alice : I do love UML in documentation")}
@@ -620,5 +627,8 @@ defmodule SayCheezEx do
 
   """
 
-  def uml(s), do: Plantuml.render(s)
+  def uml(s) do
+    {:ok, md} = Plantuml.render(s)
+    md
+  end
 end
