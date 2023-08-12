@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 0.3.0 - 2023-08-12
+
+* Added initial support for Graphviz and PlantUML
+
 ## 0.2.3 - 2023.04.14
 
 * Fixes #20 - Remove Elixir prefix from module names

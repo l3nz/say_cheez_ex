@@ -1,5 +1,7 @@
 defmodule SayCheezEx do
   alias SayCheezEx.DataSource.Beam
+  alias SayCheezEx.Graphs.Graphviz
+  alias SayCheezEx.Graphs.Plantuml
 
   @moduledoc """
   This module is used to retrieve assorted pieces of
@@ -37,6 +39,40 @@ defmodule SayCheezEx do
 
   See `info/1` for  list of allowed attributes, or `all/0` for
   a map with all pre-defined attributes.
+
+  # Graphs
+
+  What is better than Elixir's own documentation? adding
+  graphs to it, and having them embedded in your documentation.
+
+  - `graphviz/1` (requires a locally installed graphviz)
+  - `uml/1` (requires curl installed)
+
+  To try them, use:
+
+  ```
+    module Foo do
+      import SayCheezEx, only: [uml: 1, graphviz: 1]
+
+      @moduledoc "\""
+      Here goes a Graphviz graph:
+
+      \#{graphviz("digraph { Sup -> GenServ }")}
+
+      Here a PlantUML graph:
+
+      \#{uml(\""""
+        Bob -> Alice : I do love UML in documentation
+        Alice -> Bob : me too!
+      \""")}
+
+      "\""
+
+      ...
+    end
+  ```
+
+
 
   """
 
@@ -527,4 +563,62 @@ defmodule SayCheezEx do
       s when is_binary(s) -> s
     end)
   end
+
+  @doc """
+  Runs a local Graphviz
+
+
+  #{Graphviz.demo_render!("digraph { Sup -> GenServ }")}
+
+
+  """
+
+  def graphviz(s), do: Graphviz.render(s)
+
+  @doc """
+  PlantUML https://plantuml.com/
+
+
+  #{Plantuml.demo_render!("Bob -> Alice : I do love UML in documentation")}
+
+
+  You can have pretty complex UML graphs in there, like e.g.
+
+  #{Plantuml.demo_render!("""
+    actor Bob #red
+    participant Alice
+    participant "I have a really long name" as L #99FF99
+
+    Alice->Bob: Authentication Request
+    Bob->Alice: Authentication Response
+    Bob->L: Log transaction
+  """)}
+
+  And even some rather exotic ones, like:
+
+  #{Plantuml.demo_render!("""
+
+  @startmindmap
+  + OS
+  ++ Ubuntu
+  +++ Linux Mint
+  +++ Kubuntu
+  +++ Lubuntu
+  +++ KDE Neon
+  ++ LMDE
+  ++ SolydXK
+  ++ SteamOS
+  ++ Raspbian
+  -- Windows 95
+  -- Windows 98
+  -- Windows NT
+  --- Windows 8
+  --- Windows 10
+  @endmindmap
+  """)}
+
+
+  """
+
+  def uml(s), do: Plantuml.render(s)
 end
