@@ -43,8 +43,11 @@ defmodule SayCheezEx.Graphs.Plantuml do
     url = make_plantuml_url_simple(uml_source)
     # IO.puts(url)
     _r = Provider.run_cmd("curl", ["-o#{svgFile}", url])
-    {:ok, c} = File.read(svgFile)
-    {:ok, c}
+
+    case File.read(svgFile) do
+      {:ok, c} -> {:ok, c}
+      _ -> {:ok, "File not found"}
+    end
   end
 
   @doc """

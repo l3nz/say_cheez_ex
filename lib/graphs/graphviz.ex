@@ -15,8 +15,11 @@ defmodule SayCheezEx.Graphs.Graphviz do
   def generate_content(dotFile) do
     svgFile = "#{dotFile}.t.svg"
     _r = Provider.run_cmd("dot", ["-Tsvg", "-o#{svgFile}", dotFile])
-    {:ok, c} = File.read(svgFile)
-    {:ok, clean_up_svg(c)}
+
+    case File.read(svgFile) do
+      {:ok, c} -> {:ok, clean_up_svg(c)}
+      _ -> {:ok, "File not found"}
+    end
   end
 
   def demo_render!(s) do
