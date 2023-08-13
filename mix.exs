@@ -8,7 +8,7 @@ defmodule SayCheezEx.MixProject do
     [
       app: :say_cheez_ex,
       version: @version,
-      description: "Captures the environment 📸 at build time",
+      description: "Captures the environment 📸 at build time and embeds graphs in ExDocs",
       package: package(),
       dialyzer: dialyzer(),
       elixir: "~> 1.13",

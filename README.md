@@ -1,10 +1,11 @@
 # SayCheezEx 📸  
 
-Captures a snapshot of the environment at build time, so you can display it at run-time.
+Captures a snapshot of the environment at build time, so you can display it at run-time. And has a handy syntax to include UML graphs in your ExDocs.
 
-Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else. It could be in `git`, or in `mix`, or exposed as an Erlang system property... good luck remembering it all. With SayCheezEx, it's all in one place.
+* Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else. It could be in `git`, or in `mix`, or exposed as an Erlang system property... good luck remembering it all. With SayCheezEx, it's all in one place.
+* They say that in Eixir, documentation is a first-class citizen. I find that UML graphs are very useful to document GenServers and their interactions. Now you can write them right into your @doc/@moduledoc texts. 
 
-This library takes a lot of inspiration from an earlier Clojure library, which you can find at https://github.com/l3nz/say-cheez. The previous library has been very useful to me over the years, and I'm hoping that this one will be just as helpful!
+This library takes inspiration from an earlier Clojure library, which you can find at https://github.com/l3nz/say-cheez. The previous library has been very useful to me over the years, and I'm hoping that this one will be just as helpful!
 
 [![Hex.pm](https://img.shields.io/hexpm/v/say_cheez_ex)](https://hex.pm/packages/say_cheez_ex)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/say_cheez_ex)
@@ -14,6 +15,8 @@ This library takes a lot of inspiration from an earlier Clojure library, which y
 
 
 ## Using
+
+### Embedding build information
 
 Whenever you want to reference a version/build information,
 create an Elixir attribute for the module and compute its value through SayCheezEx.
@@ -71,7 +74,7 @@ between brackets, with the following rules:
 
 They will also make sure that any module name embedded through `__MODULE__` appears as it does in Elixir.
 
-### What is available
+#### What is available
 
 - The name of this project, its version, the version of Elixir and OTP
 - When the project was built, where was it built and by which user, the build number (if available)
@@ -120,13 +123,46 @@ map with all available attributes:
 }
 ```
 
+### UML Graphs
+
+You can now easily add graph created with GraphViz and PlantUML in your documentation.
+
+At the moment, GraphViz needs to be installed, but PlantUML is computed through an online server.
+
+And graphs will be cached aggressively, so they are generate donly once and won't slow down your 
+developement cycle.
+
+```elixir
+
+module Foo do
+    import SayCheezEx, only: [uml: 1, graphviz: 1]
+
+    @moduledoc """
+    Here goes a Graphviz graph:
+
+    #{graphviz("digraph { Sup -> GenServ }")}
+
+    Here a PlantUML graph:
+
+    #{uml("""
+      Bob -> Alice : I do love UML in documentation
+      Alice -> Bob : I love it too!
+    """)}
+
+    """
+
+    ...
+end
+```
+
+
 
 ## Installing
 
 Just add to your `mix.exs` file:
 
 ```elixir
-    {:say_cheez_ex, "~> 0.2"}
+    {:say_cheez_ex, "~> 0.3"}
 ```
 
 - Full documentation: https://hexdocs.pm/say_cheez_ex
@@ -134,10 +170,6 @@ Just add to your `mix.exs` file:
 
 
 
-
-# Roadmap
-
-- Display runtime information (memory, cpu) in a compact and handy way
 
 
 
