@@ -45,9 +45,6 @@ defmodule SayCheezEx do
   What is better than Elixir's own documentation? adding
   graphs to it, and having them embedded in your documentation.
 
-  - `graphviz/1` (requires a locally installed graphviz)
-  - `uml/1` (requires curl installed)
-
   To try them, use:
 
   ```
@@ -63,7 +60,7 @@ defmodule SayCheezEx do
 
       \#{uml("\""
         Bob -> Alice : I do love UML in documentation
-        Alice -> Bob : me too!
+        Alice -> Bob : I love it too!
       \""")}
 
       "\""
@@ -72,10 +69,13 @@ defmodule SayCheezEx do
     end
   ```
 
-  At the moment ther eis no caching in the build, and
-  I would like to use an external server if no local tool
-  is available. But it works for now.
+  See for yourself some examples at:
 
+  - `graphviz/1`
+  - `uml/1`
+
+  Graphs are cached under `_build/img_cache` so a full
+  render happens only when they change.
 
   """
 
@@ -568,10 +568,22 @@ defmodule SayCheezEx do
   end
 
   @doc """
-  Runs a local Graphviz
+  Runs a local Graphviz command and embeds the resulting SVG.
+
+  #{Graphviz.render!("""
+  digraph {
+    Sup -> GenServ;
+    Sup -> OtherGenServer;
+  }
+  """)}
 
 
-  #{Graphviz.render!("digraph { Sup -> GenServ; Sup -> OtherGenServer }")}
+  ## Notes
+
+  - Requires GraphViz installed
+  - You can find full documentation of GraphViz at
+    https://graphviz.org/
+  - See also `uml/1`.
 
 
   """
@@ -579,47 +591,208 @@ defmodule SayCheezEx do
   def graphviz(s), do: Graphviz.render!(s)
 
   @doc """
-  You can find PlantUML https://plantuml.com/
+  Runs a command though PlantUml, either local or on-line.
 
-
-
-  #{Plantuml.render!("Bob -> Alice : I do love UML in documentation")}
-
-
-  You can have pretty complex UML graphs in there, like e.g.
+  This is pretty handy to document, for example, a set of GenServers
+  and how they depend on each other:
 
   #{Plantuml.render!("""
-    actor Bob #red
-    participant Alice
-    participant "I have a really long name" as L #99FF99
+      Component [Application] as C #Yellow
+      Component [Pool] as P #Yellow
+      Component [Activator] as A
+      Component [Logger] as LOG
 
-    Alice->Bob: Authentication Request
-    Bob->Alice: Authentication Response
-    Bob->L: Log transaction
+
+      cloud "QMLive" {
+      Component [QML]
+      }
+
+      Component [Web acceptor] as WA #Yellow
+
+
+
+      database "Local DB" {
+      Component [Table of Services] as TSVC
+      Component [Instance state] as TIS
+      }
+
+      TSVC --> A
+
+      C .. A
+      C .. P
+      A -> P
+      C .. LOG
+
+
+
+      frame "Operator 1" {
+      Component [Operator 1] as S
+      Component [Updater] as SU
+      Component [DynamicSupervisor] as DS #White
+
+      QML <.. SU
+      TIS <.. SU
+      SU -> DS
+
+
+      P --> S
+
+      S ..> SU
+      S ..> DS
+
+
+      Component [Puller X] as PX
+      Component [Puller Y] as PY
+
+      Component [Pusher A] as IA
+      Component [Pusher B] as IB
+
+      Component [Cmds A] as CA
+
+
+      WA --> PX
+      WA --> CA
+      DS .. [PX]
+      DS .. [PY]
+      DS .. [IA]
+      DS .. [IB]
+      DS .. [CA]
+
+      PX --> IA
+      PX --> IB
+
+      }
+
+
+
+
+      frame "Operator N" {
+      Component [Service N] as SN
+      }
+
+      P --> [SN]
+
   """)}
 
-  And even some rather exotic ones, like:
+
+
+
+  Or how multiple GenServers send messages to each other and
+  which responses/replies are used:
+
+  #{Plantuml.render!("""
+
+    title "Shared feedback actions"
+
+    participant PBX
+
+    participant Uniloader as U
+
+
+    box "LogFwd" #white
+    entity "Puller" as PU #red
+
+    entity "Pusher 1" as F1 #yellow
+    entity "Commands 1" as  C1 #yellow
+
+
+    entity "Pusher 2" as F2 #pink
+    entity "Commands 2" as  C2 #pink
+
+    end box
+
+    participant "QMLive 1" as Q1 #yellow
+    participant "QMLive 2" as Q2 #pink
+
+    activate F1
+    F1 --> Q1 ++: Log upload...
+    Q1 --> F1 --: Actions pending
+    F1 --> C1: Check actions
+    deactivate F1
+    activate C1
+    |||
+
+    C1 --> Q1 ++ : Any news?
+    Q1 --> C1 -- : new command,\\n id=123
+    C1  --> PU ++ : new cmd,\\n id=C1/P1/123
+    deactivate C1
+    note over PU: Command stored
+
+    |||
+    C2 -> C2 ++: Timer wake-up
+    C2 --> Q2 ++ : Any news?
+    Q2 --> C2 -- : "new command, id=42"
+    C2 --> PU : "new cmd, id=C2/P1/42"
+    deactivate C2
+    note over PU: 2 cmds stored
+    |||
+
+    PU -> U
+    U -> PBX
+
+  """)}
+
+
+  And there is way more - only limited by your imagination.
+  For example, this is a mind-map (stolen from https://www.drawio.com/blog/plantuml-mindmaps-from-text)
+  It ain't' half bad, right?
 
   #{Plantuml.render!("""
 
   @startmindmap
-  + OS
-  ++ Ubuntu
-  +++ Linux Mint
-  +++ Kubuntu
-  +++ Lubuntu
-  +++ KDE Neon
-  ++ LMDE
-  ++ SolydXK
-  ++ SteamOS
-  ++ Raspbian
-  -- Windows 95
-  -- Windows 98
-  -- Windows NT
-  --- Windows 8
-  --- Windows 10
+  caption Tasks
+  title Onboarding and offboarding tasks
+
+  +[#lightgreen] Onboarding
+  ++ Prior to first day
+  +++_ <&star>Contract signed
+  +++_ Employee handbook
+  +++_ IT equipment reserved
+  ++ First day
+  +++_ <&people>Office tour
+  +++_ <&people>Team intros
+  +++ Account setup
+  ++ First week
+  +++_ <&people>Shadow team members
+  +++_ Software training
+  ++ First month
+  +++_ Assign projects/tasks
+  +++_ Set goals
+  +++_ <&people>Get team feedback
+
+  +[#orange] Offboarding
+  ++ <&people>Feedback and review
+  ++[#999999] <s>Exit interview</s>
+  ++ Tasks/projects reassigned
+  +++_ <&people>Handover
+  ++ Account deactivation/deletion
+  ++ IT hardware return
+
+  header
+  Currently under review
+  endheader
+
+  legend right
+    <&star> priority
+    <&people> meetings
+  endlegend
+
+  center footer Last updated: May
   @endmindmap
   """)}
+
+  And as all of this is text-based, it plays well with your source
+  files, version control and whatnot.
+
+  ## Notes
+
+  - You can find full documentation of PlantUML and the
+    gazillion graphs it produces at https://plantuml.com/
+  - At the moment, all images are processed through
+    the on-line server
+  - Nothing stops you from using the module `SayCheezEx.Graphs.Plantuml` to generate
+    SVG images at runtime, not only in documentation.
+  - See also `graphviz/1`.
 
 
   """
