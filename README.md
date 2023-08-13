@@ -125,12 +125,16 @@ map with all available attributes:
 
 ### UML Graphs
 
-You can now easily add graph created with GraphViz and PlantUML in your documentation.
+You can now easily add graph created with GraphViz and PlantUML in your documentation. This is how
+they may look like: https://hexdocs.pm/say_cheez_ex/SayCheezEx.html#uml/1
 
 At the moment, GraphViz needs to be installed, but PlantUML is computed through an online server.
 
 And graphs will be cached aggressively, so they are generate donly once and won't slow down your 
 developement cycle.
+
+Graphs will be embedded as SVG in your documentation, so they do not depend on client-side rendering,
+as it was the case with Mermaid.js.
 
 ```elixir
 
