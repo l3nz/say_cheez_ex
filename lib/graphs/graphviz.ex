@@ -8,38 +8,37 @@ defmodule SayCheezEx.Graphs.Graphviz do
   """
 
   @impl true
-  def render(s) do
-    Provider.rebuild_if_needed(s, "gv.dot", &generate_content/1)
+  def render!(s),
+    do:
+      render(s)
+      |> Provider.display()
+
+  @impl true
+  def render(recipe) do
+    Provider.rebuild_if_needed("gv", recipe, &generate_content_graphviz_local/1)
   end
 
-  def generate_content(dotFile) do
-    svgFile = "#{dotFile}.t.svg"
-    _r = Provider.run_cmd("dot", ["-Tsvg", "-o#{svgFile}", dotFile])
+  def generate_content_graphviz_local(recipe) do
+    dot_file = Provider.file(:temp, "gv", recipe)
+    svg_file = "#{dot_file}.svg"
 
-    case File.read(svgFile) do
-      {:ok, c} -> {:ok, clean_up_svg(c)}
-      _ -> {:ok, "File not found"}
+    File.write!(dot_file, recipe)
+
+    case Provider.run_cmd("dot", ["-Tsvg", "-o#{svg_file}", dot_file]) do
+      b when is_binary(b) ->
+        case File.read(svg_file) do
+          {:ok, content} ->
+            {:ok,
+             content
+             |> Provider.clean_up_svg()
+             |> Provider.wrap_in_div_for_valid_markdown()}
+
+          {:error, e} ->
+            {:error, "Something went wrong: #{inspect(e)}"}
+        end
+
+      {:error, e} ->
+        {:error, "Something went wrong running dot: #{inspect(e)}"}
     end
-  end
-
-  def demo_render!(s) do
-    case render(s) do
-      {:ok, v} -> v
-      {:error, e} -> inspect(e)
-    end
-  end
-
-  @doc """
-  We want to simplify the SVG that Graphviz generates.
-  """
-
-  def clean_up_svg(svg) do
-    svg
-    # XML header
-    |> String.replace(~r/<\?(.|\s)*?\?>/, "")
-    # doctype
-    |> String.replace(~r/<!DOCTYPE(.|\s)*?>/, "")
-    # HTML comments
-    |> String.replace(~r/<!--(.|\s)*?-->/, "")
   end
 end

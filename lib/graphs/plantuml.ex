@@ -2,7 +2,7 @@ defmodule SayCheezEx.Graphs.Plantuml do
   alias SayCheezEx.Graphs.Provider
   @behaviour Provider
 
-  @doc """
+  @moduledoc """
   PlantUML has an online server, e.g. this:
 
       @startuml
@@ -15,18 +15,41 @@ defmodule SayCheezEx.Graphs.Plantuml do
 
   So you don't need to have PlantUML installed.
 
-  Still we use the `curl` command to actually request the file.
 
   """
 
   @impl true
-  def render(s) do
-    Provider.rebuild_if_needed(s, "pu.uml", &generate_content/1)
+  def render(recipe) do
+    Provider.rebuild_if_needed("pu", recipe, &generate_content_plantuml_http/1)
   end
 
-  def demo_render!(s) do
-    {:ok, md} = render(s)
-    md
+  @impl true
+  def render!(s),
+    do:
+      render(s)
+      |> Provider.display()
+
+  @doc """
+
+
+      curl -oxxx.svg http://www.plantuml.com/plantuml/svg/\~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c
+
+
+  """
+
+  def generate_content_plantuml_http(recipe) do
+    url = make_plantuml_url_simple(recipe)
+
+    case Provider.trivial_http_get_client(url) do
+      {:ok, content} ->
+        {:ok,
+         content
+         |> Provider.clean_up_svg()
+         |> Provider.wrap_in_div_for_valid_markdown()}
+
+      {:error, e} ->
+        {:error, "Something wwent wrong: #{inspect(e)}"}
+    end
   end
 
   @doc """
@@ -37,14 +60,14 @@ defmodule SayCheezEx.Graphs.Plantuml do
 
   """
 
-  def generate_content(umlFile) do
-    svgFile = "#{umlFile}.t.svg"
-    {:ok, uml_source} = File.read(umlFile)
+  def generate_content(uml_file) do
+    svg_file = "#{uml_file}.t.svg"
+    {:ok, uml_source} = File.read(uml_file)
     url = make_plantuml_url_simple(uml_source)
     # IO.puts(url)
-    _r = Provider.run_cmd("curl", ["-o#{svgFile}", url])
+    _r = Provider.run_cmd("curl", ["-o#{svg_file}", url])
 
-    case File.read(svgFile) do
+    case File.read(svg_file) do
       {:ok, c} -> {:ok, c}
       _ -> {:ok, "File not found"}
     end
@@ -73,7 +96,7 @@ defmodule SayCheezEx.Graphs.Plantuml do
 
   def make_plantuml_url_simple(s) do
     :erlang.binary_to_list(s)
-    |> Enum.map(&encodeByte/1)
+    |> Enum.map(&encode_byte/1)
     |> Enum.join()
     |> as_plantuml_simple_url(:svg)
   end
@@ -82,7 +105,7 @@ defmodule SayCheezEx.Graphs.Plantuml do
   def as_plantuml_url(payload, :svg), do: "https://www.plantuml.com/plantuml/svg/#{payload}"
   def as_plantuml_url(payload, :editor), do: "https://www.plantuml.com/plantuml/uml/#{payload}"
 
-  def encodeByte(b) do
+  def encode_byte(b) do
     case b do
       bb when bb < 16 -> "0#{Integer.to_string(bb, 16)}"
       bo when bo > 255 -> "XX"
@@ -96,7 +119,7 @@ defmodule SayCheezEx.Graphs.Plantuml do
   https://stackoverflow.com/questions/8742169/how-can-i-compress-a-list-with-zlib-in-erlang-and-decompress-it-back
 
   """
-  def make_plantuml_url_deflated(s) do
+  def make_plantuml_url_deflated(_s) do
     :tdb
   end
 end

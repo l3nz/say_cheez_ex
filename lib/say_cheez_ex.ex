@@ -571,27 +571,24 @@ defmodule SayCheezEx do
   Runs a local Graphviz
 
 
-  #{Graphviz.demo_render!("digraph { Sup -> GenServ }")}
+  #{Graphviz.render!("digraph { Sup -> GenServ; Sup -> OtherGenServer }")}
 
 
   """
 
-  def graphviz(s) do
-    {:ok, md} = Graphviz.render(s)
-    md
-  end
+  def graphviz(s), do: Graphviz.render!(s)
 
   @doc """
   You can find PlantUML https://plantuml.com/
 
 
 
-  #{Plantuml.demo_render!("Bob -> Alice : I do love UML in documentation")}
+  #{Plantuml.render!("Bob -> Alice : I do love UML in documentation")}
 
 
   You can have pretty complex UML graphs in there, like e.g.
 
-  #{Plantuml.demo_render!("""
+  #{Plantuml.render!("""
     actor Bob #red
     participant Alice
     participant "I have a really long name" as L #99FF99
@@ -603,7 +600,7 @@ defmodule SayCheezEx do
 
   And even some rather exotic ones, like:
 
-  #{Plantuml.demo_render!("""
+  #{Plantuml.render!("""
 
   @startmindmap
   + OS
@@ -627,8 +624,5 @@ defmodule SayCheezEx do
 
   """
 
-  def uml(s) do
-    {:ok, md} = Plantuml.render(s)
-    md
-  end
+  def uml(s), do: Plantuml.render!(s)
 end
