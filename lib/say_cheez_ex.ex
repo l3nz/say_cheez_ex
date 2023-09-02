@@ -543,7 +543,10 @@ defmodule SayCheezEx do
         CHEEZ=1 mix test
 
   Will print captured output (see `should_print?/0` for further
-  details).
+  details). Of course this only happens when compiling classes,
+  so when working interactively you may sometimes see the output
+  and sometimes won't, as the compiler decides what is in
+  need of being rebuilt.
 
   If you don't want this fuction to print out the captured
   environment, just use `cheez/1`.
