@@ -3,7 +3,7 @@
 Captures a snapshot of the environment at build time, so you can display it at run-time. And has a handy syntax to include UML graphs in your ExDocs.
 
 * Sometimes you want to reference the version of your Elixir project at run time, or when / where / from what sources it was built, but that information is not available anymore once you deploy your app somewhere else. It could be in `git`, or in `mix`, or exposed as an Erlang system property... good luck remembering it all. With SayCheezEx, it's all in one place.
-* They say that in Eixir, documentation is a first-class citizen. I find that UML graphs are very useful to document GenServers and their interactions. Now you can write them right into your @doc/@moduledoc texts. 
+* They say that in Elixir, documentation is a first-class citizen. I find that UML graphs are very useful to document GenServers and their interactions. Now you can write them right into your @doc/@moduledoc texts. 
 
 This library takes inspiration from an earlier Clojure library, which you can find at https://github.com/l3nz/say-cheez. The previous library has been very useful to me over the years, and I'm hoping that this one will be just as helpful!
 
@@ -123,18 +123,17 @@ map with all available attributes:
 }
 ```
 
-### UML Graphs
+### UML/DOT Graphs
 
 You can now easily add graph created with GraphViz and PlantUML in your documentation. This is how
 they may look like: https://hexdocs.pm/say_cheez_ex/SayCheezEx.html#uml/1
 
 At the moment, GraphViz needs to be installed, but PlantUML is computed through an online server.
 
-And graphs will be cached aggressively, so they are generate donly once and won't slow down your 
-developement cycle.
+And graphs will be cached aggressively, so they are generated only 
+once and won't slow down your developement cycle.
 
-Graphs will be embedded as SVG in your documentation, so they do not depend on client-side rendering,
-as it was the case with Mermaid.js.
+Graphs will be embedded as SVG in your documentation, so they do not depend on client-side rendering, as it was the case with Mermaid.js.
 
 ```elixir
 
@@ -150,7 +149,7 @@ module Foo do
 
     #{uml("""
       Bob -> Alice : I do love UML in documentation
-      Alice -> Bob : I love it too!
+      Alice -> Bob : I love it as well!
     """)}
 
     """

@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.4 - ?
+## 0.3.4 - 2023-09-02
 
 * Fixes #21 - Tests check STDOUT when it is supposed to be written.
 * Fixes #22 - You can control whether you want captured variables
