@@ -182,6 +182,22 @@ defmodule SayCheezExTest do
     assert "k" = SayCheezEx.first_non_empty([], "k")
   end
 
+  test "When should we print on STDOUT?" do
+    assert true == SayCheezEx.should_print?("", "prod")
+    assert false == SayCheezEx.should_print?("", "dev")
+    assert false == SayCheezEx.should_print?("", "test")
+
+    assert true == SayCheezEx.should_print?("1", "prod")
+    assert true == SayCheezEx.should_print?("1", "dev")
+    assert true == SayCheezEx.should_print?("1", "test")
+
+    assert false == SayCheezEx.should_print?("0", "prod")
+    assert false == SayCheezEx.should_print?("0", "dev")
+    assert false == SayCheezEx.should_print?("0", "test")
+
+    assert false == SayCheezEx.should_print?(nil, :other)
+  end
+
   describe "fn cheez:" do
     test "cheez()" do
       assert :ok =

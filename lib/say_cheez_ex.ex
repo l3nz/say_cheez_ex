@@ -526,17 +526,37 @@ defmodule SayCheezEx do
   will become "Elixir.Foo.Bar"), the "Elixir" prefix is stripped
   when found.
 
-  ## See also
+  ## Controlling output
 
-  - If you don't want this fuction to print out the captured
+  In general, on every capture, we would love to print out the current captured
+  variables on STDOUT. This is quite handy for server builds,
+  as in the build log there are the same pieces of information
+  that the build embeds.
+
+  This also gets in the way during development and testing,
+  cluttering the output.
+
+  So the default is that is printing only happens when building
+  in the `:prod` environment, unless you force it on or off
+  using the CHEEZ environment variable. So, say....
+
+        CHEEZ=1 mix test
+
+  Will print captured output (see `should_print?/0` for further
+  details).
+
+  If you don't want this fuction to print out the captured
   environment, just use `cheez/1`.
-
 
   """
 
   def cheez!(s) when is_binary(s) do
     cs = cheez(s)
-    IO.puts("-- 📸 '#{cs}'")
+
+    if should_print?() do
+      IO.puts("-- 📸 '#{cs}'")
+    end
+
     cs
   end
 
@@ -566,6 +586,43 @@ defmodule SayCheezEx do
       s when is_binary(s) -> s
     end)
   end
+
+  @doc """
+  Checks whether we should output the results of SayCheezEx on
+  STDOUT.
+
+  In a separate function for ease of testing.
+
+  """
+  def should_print?(env_cheez, build_mix_env) do
+    case env_cheez do
+      "1" ->
+        true
+
+      "0" ->
+        false
+
+      _ ->
+        case build_mix_env do
+          "prod" -> true
+          _ -> false
+        end
+    end
+  end
+
+  @doc """
+  When should we print on STDOUT?
+
+  - in environment `:prod` only (so for final build)
+  - unless environment variable `CHEEZ` is set to 1, that forces printing
+    in all environments
+  - unless environment variable `CHEEZ` is set to 0, that silences printing
+    in all environments
+
+
+  """
+  def should_print?(),
+    do: should_print?(get_env("CHEEZ"), info(:build_mix_env))
 
   @doc """
   Runs a local Graphviz command and embeds the resulting SVG.

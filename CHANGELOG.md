@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4 - ?
+
+* Fixes #22 - You can control whether you want captured variables
+  to appear on STDOUT or not. See the docs for `SayCheez.cheez!/1`.
 
 ## 0.3.3 - 2023-08-13
 
