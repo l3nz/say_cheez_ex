@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.3.4 - 2023-09-02
+## 0.3.5 - 2023-09-02
 
+* Foxes #33 - Include Erlang extra_applications for cleaner compile
 * Fixes #21 - Tests check STDOUT when it is supposed to be written.
 * Fixes #22 - You can control whether you want captured variables
   to appear on STDOUT or not. See the docs for `SayCheez.cheez!/1`.
