@@ -15,7 +15,7 @@ defmodule SayCheezEx.Graphs.Provider do
   @doc """
   Runs an external command.
 
-  It returns a binary that captures STDOUT if all went well,
+  It returns a binary that captures STDOUT+STDERR if all went well,
   or a tuple `{:error, e}` if something went bonkers.
 
   If it's trying to call a command that does not exist on your
@@ -25,7 +25,7 @@ defmodule SayCheezEx.Graphs.Provider do
 
   def run_cmd(cmd, parameters) do
     try do
-      case System.cmd(cmd, parameters) do
+      case System.cmd(cmd, parameters, stderr_to_stdout: true) do
         {result, 0} ->
           String.trim(result)
 

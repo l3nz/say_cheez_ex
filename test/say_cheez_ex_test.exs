@@ -3,6 +3,7 @@ defmodule SayCheezExTest do
   use ExUnit.Case, async: true
   use Mimic
   doctest SayCheezEx
+  alias ExUnit.CaptureIO
 
   @moduledoc """
   Most of these things are rather hard to test.
@@ -210,9 +211,18 @@ defmodule SayCheezExTest do
                SayCheezEx.cheez("{:abc,=NONE} #{__MODULE__} {:abc,=NONE}")
     end
 
-    test "cheez!()" do
+    test "cheez!() with output" do
+      # To actually check output generated, run with
+      #   CHEEZ=1 mix test
+
+      {result, output} = CaptureIO.with_io(fn -> SayCheezEx.cheez!("x {:build_at}") end)
+
+      if SayCheezEx.should_print?() do
+        assert String.contains?(output, "📸"), "Out: #{output}"
+      end
+
       assert :ok =
-               SayCheezEx.cheez!("x {:build_at}")
+               result
                |> date_matches?("x nnnnnn.nnnn")
     end
   end

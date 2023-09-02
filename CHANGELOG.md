@@ -2,6 +2,7 @@
 
 ## 0.3.4 - ?
 
+* Fixes #21 - Tests check STDOUT when it is supposed to be written.
 * Fixes #22 - You can control whether you want captured variables
   to appear on STDOUT or not. See the docs for `SayCheez.cheez!/1`.
 

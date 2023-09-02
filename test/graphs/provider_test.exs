@@ -12,7 +12,9 @@ defmodule ProviderTest do
     end
 
     test "Run existing command" do
-      assert "" = Provider.run_cmd("dot", ["-V"])
+      result = Provider.run_cmd("dot", ["-V"])
+
+      assert String.contains?(result, "graphviz"), "Out: #{result}"
     end
 
     test "String hash" do
