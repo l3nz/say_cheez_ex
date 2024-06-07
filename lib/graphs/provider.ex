@@ -116,6 +116,26 @@ defmodule SayCheezEx.Graphs.Provider do
   end
 
   @doc """
+  Creates a temporary file with the contents given,
+  returning the filename.
+
+      iex > Provider.to_temp_file("hello", "example")
+      "/temp/SayCheezImg_AAF4C61DDCC54D_tmp_example"
+
+
+  We make it unique based on the contents, and we
+  require a reason (for example one may have an input file
+  and an output file to generate the contents that will be cached).
+
+  """
+  def to_temp_file(file_contents, reason) do
+    hash = string_hash(file_contents)
+    filename = file(:temp, hash, "tmp_#{reason}")
+    File.write!(filename, file_contents)
+    filename
+  end
+
+  @doc """
   The only significant advantage of this HTTP client is that
   it only uses things that are in Erlang itself.
 
@@ -167,7 +187,7 @@ defmodule SayCheezEx.Graphs.Provider do
 
   def cached_filename(module, recipe) do
     hash = string_hash(recipe)
-    file(:cache, hash, "#{module}.md")
+    file(:cache, hash, "#{module}.cache")
   end
 
   @doc """

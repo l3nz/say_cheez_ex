@@ -7,7 +7,13 @@ defmodule GraphvizTest do
 
   describe "Graphviz" do
     test "Run simple" do
-      assert {:ok, s} = Graphviz.render("digraph { a -> b }")
+      assert {:ok, s} =
+               Graphviz.render("""
+               digraph {
+                 a -> b [label="#{Enum.random(1..1_000_000_000_000)}"];
+               }
+               """)
+
       assert String.length(s) > 10
     end
   end

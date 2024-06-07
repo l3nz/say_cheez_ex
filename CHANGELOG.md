@@ -1,8 +1,14 @@
 # Changelog
 
+
+# 0.3.6 - 2024-06-07
+
+* Fixes #34 - Filename for DOT contains the whole file
+
+
 ## 0.3.5 - 2023-09-02
 
-* Foxes #33 - Include Erlang extra_applications for cleaner compile
+* Fixes #33 - Include Erlang extra_applications for cleaner compile
 * Fixes #21 - Tests check STDOUT when it is supposed to be written.
 * Fixes #22 - You can control whether you want captured variables
   to appear on STDOUT or not. See the docs for `SayCheez.cheez!/1`.

@@ -19,10 +19,8 @@ defmodule SayCheezEx.Graphs.Graphviz do
   end
 
   def generate_content_graphviz_local(recipe) do
-    dot_file = Provider.file(:temp, "gv", recipe)
+    dot_file = Provider.to_temp_file(recipe, "dotfile")
     svg_file = "#{dot_file}.svg"
-
-    File.write!(dot_file, recipe)
 
     case Provider.run_cmd("dot", ["-Tsvg", "-o#{svg_file}", dot_file]) do
       b when is_binary(b) ->
