@@ -4,6 +4,19 @@ defmodule SayCheezExTest do
   use Mimic
   doctest SayCheezEx
   alias ExUnit.CaptureIO
+  use PropCheck
+
+  # Mix-and-match properties and tests? pretty cool.
+  property "always works" do
+    forall type <- term() do
+      boolean(type)
+    end
+  end
+
+  def boolean(v) do
+    #    IO.puts(inspect(v))
+    true
+  end
 
   @moduledoc """
   Most of these things are rather hard to test.
